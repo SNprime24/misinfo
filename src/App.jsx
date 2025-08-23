@@ -1,36 +1,30 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useState } from "react";
 import axios from "axios";
-import { motion } from "framer-motion";
-import { Download, Info, Moon, Sun, X, ExternalLink } from "lucide-react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { X } from "lucide-react";
 
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import ResultSection from "./components/ResultSection";
 import "./App.css";
 
-let SPLINE_URL = ""; // e.g. "https://prod.spline.design/abcd1234/scene.splinecode"
-
 // ---- COLOR SYSTEM (Light & Dark) ----
-// Using CSS variables so we don't rely on Tailwind's dark mode config.
 const lightColors = {
-  bg: "rgb(245,245,245)", // Light background
+  bg: "rgb(245,245,245)",
   card: "rgba(255,255,255,0.8)",
   text: "rgb(15,23,42)",
   subtext: "rgba(15,23,42,0.7)",
   border: "rgba(15,23,42,0.1)",
-  accent: "rgb(0,72,255)", // Bright Electric Blue (Flower)
+  accent: "rgb(0,72,255)",
   midBlue: "rgb(20,50,200)",
   darkBlue: "rgb(10,30,120)",
 };
 const darkColors = {
-  bg: "rgb(33,33,33)", // Dominant Black/Dark Gray
+  bg: "rgb(33,33,33)",
   card: "rgba(255,255,255,0.06)",
   text: "rgb(244,244,244)",
   subtext: "rgba(244,244,244,0.7)",
   border: "rgba(255,255,255,0.08)",
-  accent: "rgb(0,72,255)", // Bright Electric Blue (Flower)
+  accent: "rgb(0,72,255)",
   midBlue: "rgb(20,50,200)",
   darkBlue: "rgb(10,30,120)",
 };
@@ -82,24 +76,6 @@ function Modal({ open, title, onClose, children }) {
   );
 }
 
-// ---- PROGRESS BAR ----
-
-// ---- HIGHLIGHT TAG ----
-// function Highlight({ text }) {
-//   return (
-//     <span
-//       className="px-2 py-1 rounded-lg text-xs font-medium border"
-//       style={{
-//         borderColor: "var(--border)",
-//         color: "var(--accent)",
-//         background: "color-mix(in oklab, var(--accent) 8%, transparent)",
-//       }}
-//     >
-//       {text}
-//     </span>
-//   );
-// }
-
 // ---- MAIN APP ----
 export default function App() {
   const [theme, setTheme] = useState("dark");
@@ -124,13 +100,13 @@ export default function App() {
   const [error, setError] = useState(null);
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
-  ``;
+
   const BASE = import.meta.env.VITE_API_URL || "";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
   const dummy = {
     score: 0,
-    summary: "Error Occured",
+    summary: "Error Occurred",
     highlights: ["Error"],
     metrics: { clarity: 0, tone: 0, correctness: 0, originality: 0 },
     entities: [],
@@ -150,7 +126,7 @@ export default function App() {
       );
       setResult(res.data);
     } catch (e) {
-      console.warn("API error, showing dummy payload", e?.message);
+      console.warn("API error, showing demo payload", e?.message);
       setError("Could not reach the analysis service. Showing a demo result.");
       setResult(dummy);
     } finally {
