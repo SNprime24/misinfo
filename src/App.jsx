@@ -8,7 +8,7 @@ import { OrbitControls } from "@react-three/drei";
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import ResultSection from "./components/ResultSection";
-import "./App.css"
+import "./App.css";
 
 let SPLINE_URL = ""; // e.g. "https://prod.spline.design/abcd1234/scene.splinecode"
 
@@ -48,14 +48,34 @@ function Modal({ open, title, onClose, children }) {
       <div className="absolute inset-0 backdrop-blur-sm" />
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-3xl rounded-2xl shadow-2xl border" style={{ background: "var(--card)", borderColor: "var(--border)" }}>
-          <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: "var(--border)" }}>
-            <h3 className="text-lg font-semibold" style={{ color: "var(--text)" }}>{title}</h3>
-            <button onClick={onClose} className="p-2 rounded-xl hover:opacity-80" aria-label="Close modal">
+        <div
+          className="w-full max-w-3xl rounded-2xl shadow-2xl border"
+          style={{ background: "var(--card)", borderColor: "var(--border)" }}
+        >
+          <div
+            className="flex items-center justify-between p-4 border-b"
+            style={{ borderColor: "var(--border)" }}
+          >
+            <h3
+              className="text-lg font-semibold"
+              style={{ color: "var(--text)" }}
+            >
+              {title}
+            </h3>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl hover:opacity-80"
+              aria-label="Close modal"
+            >
               <X size={18} style={{ color: "var(--text)" }} />
             </button>
           </div>
-          <div className="p-4 max-h-[70vh] overflow-auto" style={{ color: "var(--text)" }}>{children}</div>
+          <div
+            className="p-4 max-h-[70vh] overflow-auto"
+            style={{ color: "var(--text)" }}
+          >
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -64,11 +84,19 @@ function Modal({ open, title, onClose, children }) {
 
 // ---- PROGRESS BAR ----
 
-
 // ---- HIGHLIGHT TAG ----
 function Highlight({ text }) {
   return (
-    <span className="px-2 py-1 rounded-lg text-xs font-medium border" style={{ borderColor: "var(--border)", color: "var(--accent)", background: "color-mix(in oklab, var(--accent) 8%, transparent)" }}>{text}</span>
+    <span
+      className="px-2 py-1 rounded-lg text-xs font-medium border"
+      style={{
+        borderColor: "var(--border)",
+        color: "var(--accent)",
+        background: "color-mix(in oklab, var(--accent) 8%, transparent)",
+      }}
+    >
+      {text}
+    </span>
   );
 }
 
@@ -77,25 +105,28 @@ export default function App() {
   const [theme, setTheme] = useState("dark");
   const palette = theme === "dark" ? darkColors : lightColors;
 
-  const cssVars = useMemo(() => ({
-    ["--bg"]: palette.bg,
-    ["--card"]: palette.card,
-    ["--text"]: palette.text,
-    ["--subtext"]: palette.subtext,
-    ["--border"]: palette.border,
-    ["--accent"]: palette.accent,
-    ["--midBlue"]: palette.midBlue,
-    ["--darkBlue"]: palette.darkBlue,
-  }), [palette]);
+  const cssVars = useMemo(
+    () => ({
+      ["--bg"]: palette.bg,
+      ["--card"]: palette.card,
+      ["--text"]: palette.text,
+      ["--subtext"]: palette.subtext,
+      ["--border"]: palette.border,
+      ["--accent"]: palette.accent,
+      ["--midBlue"]: palette.midBlue,
+      ["--darkBlue"]: palette.darkBlue,
+    }),
+    [palette]
+  );
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
-
-  const BASE = import.meta.env.VITE_API_URL || '';
-  const API_URL = `${BASE}/api/v1/analysis/analyze`; 
+``
+  const BASE = import.meta.env.VITE_API_URL || "";
+  const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
   const dummy = {
     score: 0,
@@ -130,37 +161,49 @@ export default function App() {
   const score = toPercent(result?.score);
 
   return (
-    <div className="min-h-screen w-full" style={{ ...cssVars, background: "var(--bg)" }}>
+    <div
+      className="min-h-screen w-full"
+      style={{ ...cssVars, background: "var(--bg)" }}
+    >
       {/* HEADER */}
       <Header theme={theme} setTheme={setTheme} />
 
       {/* HERO 3D SECTION - fills viewport */}
-      <HeroSection 
-        theme={theme} 
-        input={input} 
-        setInput={setInput} 
-        handleAnalyze={handleAnalyze} 
+      <HeroSection
+        theme={theme}
+        input={input}
+        setInput={setInput}
+        handleAnalyze={handleAnalyze}
         loading={loading}
         error={error}
       />
 
       {/* RESULTS SECTION */}
-      <ResultSection 
-        score = {score}
-        result = {result}
-      />
+      <ResultSection score={score} result={result} />
 
       {/* FOOTER */}
       <footer className="py-10">
-        <div className="max-w-6xl mx-auto px-4 text-sm" style={{ color: "var(--subtext)" }}>
-          Built with React, Tailwind, and 3D (Spline/three.js). Paste your Spline scene URL in the code to enable the movable Spline experience.
+        <div
+          className="max-w-6xl mx-auto px-4 text-sm"
+          style={{ color: "var(--subtext)" }}
+        >
+          Built with React, Tailwind, and 3D (Spline/three.js). Paste your
+          Spline scene URL in the code to enable the movable Spline experience.
         </div>
       </footer>
 
       {/* RAW JSON MODAL */}
-      <Modal open={rawOpen} title="Raw Response" onClose={() => setRawOpen(false)}>
+      <Modal
+        open={rawOpen}
+        title="Raw Response"
+        onClose={() => setRawOpen(false)}
+      >
         <pre className="text-xs overflow-auto" style={{ color: "var(--text)" }}>
-{JSON.stringify(result ?? { hint: "Press Analyze to see a response." }, null, 2)}
+          {JSON.stringify(
+            result ?? { hint: "Press Analyze to see a response." },
+            null,
+            2
+          )}
         </pre>
       </Modal>
     </div>
