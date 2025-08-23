@@ -13,6 +13,7 @@ export default defineConfig({
         secure: true,           // set false only if backend uses self-signed cert
         rewrite: (path) => path.replace(/^\/backend/, '') // remove the /backend prefix
       }
-    }
+    },
+    port: 8080
   }
 })
