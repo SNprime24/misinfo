@@ -1,86 +1,85 @@
 import { motion } from "framer-motion";
 
-const HeroSection = ({ 
-    theme, 
-    input, 
-    setInput, 
-    handleAnalyze, 
-    loading,
-    error
+const HeroSection = ({
+  theme,
+  input,
+  setInput,
+  handleAnalyze,
+  loading,
+  error,
 }) => {
-    return (
-        <section className="relative h-[70vh] w-full overflow-hidden">
-            {/* 3D background */}
-            <div className="absolute inset-0">
-                {/* {SplineComponent && SPLINE_URL ? (
-                // @ts-ignore
-                <SplineComponent scene={SPLINE_URL} className="w-full h-full" />
-            ) : (
-                <Canvas camera={{ position: [0, 0, 4.5], fov: 55 }} shadows>
-                <ambientLight intensity={0.6} />
-                <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
-                <SpinningKnot color={palette.accent} />
-                <OrbitControls enableDamping enableZoom dampingFactor={0.08} rotateSpeed={0.6} />
-                </Canvas>
-            )} */}
-                <iframe
-                    src="https://my.spline.design/particleaibrain-DVMozu9KHZbquQ2N2fnJZUok/"
-                    frameBorder="0"
-                    width="100%"
-                    height="100%"
-                    style={{ border: "none" }}
-                    title="Spline Scene"
+  return (
+    <section className="relative h-screen w-full overflow-hidden">
+      <div className="absolute inset-0">
+        <iframe
+          src="https://my.spline.design/particleaibrain-DVMozu9KHZbquQ2N2fnJZUok/"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+          style={{ border: "none" }}
+          title="Spline Scene"
+        />
+      </div>
+      {/* Overlay CTA card */}
+      <div className="relative z-10 h-full flex items-center justify-center">
+        <div className="w-full">
+          <div className="max-w-4xl mx-auto px-4">
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="rounded-3xl shadow-2xl border p-4 md:p-6 backdrop-blur"
+              style={{
+                background: "var(--card)",
+                borderColor: "var(--border)",
+              }}
+            >
+              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Paste text or a URL to analyze…"
+                  className="flex-1 w-full px-4 py-3 rounded-2xl border outline-none focus:ring-2"
+                  style={{
+                    background:
+                      theme === "dark"
+                        ? "rgba(255,255,255,0.05)"
+                        : "rgba(255,255,255,0.9)",
+                    color: "var(--text)",
+                    borderColor: "var(--border)",
+                    boxShadow: `0 0 0 0 rgba(0,0,0,0)`,
+                  }}
                 />
-            </div>
-            {/* Overlay CTA card */}
-            <div className="relative z-10 h-full flex items-end md:items-center">
-                <div className="w-full">
-                    <div className="max-w-4xl mx-auto px-4">
-                        <motion.div
-                            initial={{ y: 24, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.6, ease: "easeOut" }}
-                            className="rounded-3xl shadow-2xl border p-4 md:p-6 backdrop-blur"
-                            style={{ background: "var(--card)", borderColor: "var(--border)" }}
-                        >
-                            <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
-                                <input
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    placeholder="Paste text or a URL to analyze…"
-                                    className="flex-1 w-full px-4 py-3 rounded-2xl border outline-none focus:ring-2"
-                                    style={{
-                                        background: theme === "dark" ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.9)",
-                                        color: "var(--text)",
-                                        borderColor: "var(--border)",
-                                        boxShadow: `0 0 0 0 rgba(0,0,0,0)`,
-                                    }}
-                                />
-                                <button
-                                    onClick={handleAnalyze}
-                                    disabled={loading || !input.trim()}
-                                    className="shrink-0 px-5 py-3 rounded-2xl font-semibold hover:opacity-90 disabled:opacity-50"
-                                    style={{ background: "var(--accent)", color: "white" }}
-                                >
-                                    {loading ? (
-                                        <span className="inline-flex items-center gap-2">
-                                            <span className="animate-spin inline-block h-4 w-4 rounded-full border-2 border-white border-t-transparent" />
-                                            Analyzing…
-                                        </span>
-                                    ) : (
-                                        "Analyze"
-                                    )}
-                                </button>
-                            </div>
-                            {error && (
-                                <div className="mt-3 text-sm" style={{ color: "var(--subtext)" }}>{error}</div>
-                            )}
-                        </motion.div>
-                    </div>
+                <button
+                  onClick={handleAnalyze}
+                  disabled={loading || !input.trim()}
+                  className="shrink-0 px-5 py-3 rounded-2xl font-semibold hover:opacity-90 disabled:opacity-50"
+                  style={{ background: "var(--accent)", color: "white" }}
+                >
+                  {loading ? (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="animate-spin inline-block h-4 w-4 rounded-full border-2 border-white border-t-transparent" />
+                      Analyzing…
+                    </span>
+                  ) : (
+                    "Analyze"
+                  )}
+                </button>
+              </div>
+              {error && (
+                <div
+                  className="mt-3 text-sm"
+                  style={{ color: "var(--subtext)" }}
+                >
+                  {error}
                 </div>
-            </div>
-        </section>
-    );
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 
 export default HeroSection;
