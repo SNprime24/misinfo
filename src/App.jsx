@@ -85,20 +85,20 @@ function Modal({ open, title, onClose, children }) {
 // ---- PROGRESS BAR ----
 
 // ---- HIGHLIGHT TAG ----
-function Highlight({ text }) {
-  return (
-    <span
-      className="px-2 py-1 rounded-lg text-xs font-medium border"
-      style={{
-        borderColor: "var(--border)",
-        color: "var(--accent)",
-        background: "color-mix(in oklab, var(--accent) 8%, transparent)",
-      }}
-    >
-      {text}
-    </span>
-  );
-}
+// function Highlight({ text }) {
+//   return (
+//     <span
+//       className="px-2 py-1 rounded-lg text-xs font-medium border"
+//       style={{
+//         borderColor: "var(--border)",
+//         color: "var(--accent)",
+//         background: "color-mix(in oklab, var(--accent) 8%, transparent)",
+//       }}
+//     >
+//       {text}
+//     </span>
+//   );
+// }
 
 // ---- MAIN APP ----
 export default function App() {
@@ -124,7 +124,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
-``
+  ``;
   const BASE = import.meta.env.VITE_API_URL || "";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
