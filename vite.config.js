@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    port: 8080,
     proxy: {
       '/backend': {
         target: 'https://misinformation-combater-backend-386097269689.europe-west1.run.app',
@@ -14,6 +15,5 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/backend/, '') // remove the /backend prefix
       }
     },
-    port: 8080
   }
 })

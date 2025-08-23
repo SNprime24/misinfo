@@ -94,7 +94,8 @@ export default function App() {
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
 
-  const API_URL = "/backend/api/v1/analysis/analyze"; 
+  const BASE = import.meta.env.VITE_API_URL || '';
+  const API_URL = `${BASE}/api/v1/analysis/analyze`; 
 
   const dummy = {
     score: 0,
