@@ -11,13 +11,6 @@ import ResultSection from "./components/ResultSection";
 import "./App.css"
 
 let SPLINE_URL = ""; // e.g. "https://prod.spline.design/abcd1234/scene.splinecode"
-let SplineComponent = null;
-try {
-  // eslint-disable-next-line
-  SplineComponent = require("@splinetool/react-spline");
-} catch (e) {
-  SplineComponent = null;
-}
 
 // ---- COLOR SYSTEM (Light & Dark) ----
 // Using CSS variables so we don't rely on Tailwind's dark mode config.
@@ -101,7 +94,7 @@ export default function App() {
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
 
-  const API_URL = "https://misinformation-combater-backend-386097269689.europe-west1.run.app/api/v1/analysis/analyze"; 
+  const API_URL = "/backend/api/v1/analysis/analyze"; 
 
   const dummy = {
     score: 0,
