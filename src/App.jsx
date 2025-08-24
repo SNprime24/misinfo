@@ -29,9 +29,11 @@ const darkColors = {
   darkBlue: "rgb(10,30,120)",
 };
 
-function toPercent(x) {
+// robust toPercent - accepts 0..1 or 0..100
+export function toPercent(x) {
   if (typeof x !== "number" || isNaN(x)) return 0;
-  return Math.max(0, Math.min(100, Math.round(x * 100)));
+  if (Math.abs(x) <= 1) return Math.max(0, Math.min(100, Math.round(x * 100)));
+  return Math.max(0, Math.min(100, Math.round(x)));
 }
 
 // ---- MODAL ----
@@ -50,10 +52,7 @@ function Modal({ open, title, onClose, children }) {
             className="flex items-center justify-between p-4 border-b"
             style={{ borderColor: "var(--border)" }}
           >
-            <h3
-              className="text-lg font-semibold"
-              style={{ color: "var(--text)" }}
-            >
+            <h3 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
               {title}
             </h3>
             <button
@@ -64,10 +63,7 @@ function Modal({ open, title, onClose, children }) {
               <X size={18} style={{ color: "var(--text)" }} />
             </button>
           </div>
-          <div
-            className="p-4 max-h-[70vh] overflow-auto"
-            style={{ color: "var(--text)" }}
-          >
+          <div className="p-4 max-h-[70vh] overflow-auto" style={{ color: "var(--text)" }}>
             {children}
           </div>
         </div>
@@ -104,26 +100,47 @@ export default function App() {
   const BASE = import.meta.env.VITE_API_URL || "";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
+  // Updated dummy to match the backend schema you provided
   const dummy = {
-    score: 0,
-    summary: "Error Occurred",
-    highlights: ["Error"],
-    metrics: { clarity: 0, tone: 0, correctness: 0, originality: 0 },
-    entities: [],
-    tips: [],
-    raw: { example: false, ts: Date.now() },
+    credibility_score: 15,
+    category: "Health Misinformation",
+    key_entities: ["Cinnamon", "Aging"],
+    report_summary:
+      "The claim that eating cinnamon can reverse aging is not supported by scientific evidence and promotes a false health remedy.",
+    analysis:
+      "This claim is not supported by credible scientific or medical sources. A review of information from trusted health organizations indicates that while cinnamon may have some health benefits, it is not a cure for aging, and excessive consumption can be harmful. This content poses a risk by promoting unverified health advice.",
+    metrics: {
+      clarity: 0.8,
+      tone: 0.25,
+      correctness: 0.05,
+      originality: 0.4,
+    },
+    sources: [
+      {
+        name: "Reuters | Fact Check",
+        url: "https://www.reuters.com/article/factcheck-cinnamon-health/fact-check-cinnamon-is-not-a-miracle-cure-idUSL1N2R21B5",
+        credibility_score: 95,
+      },
+      {
+        name: "AP News | Fact Check",
+        url: "https://apnews.com/article/fact-checking-123456789",
+        credibility_score: 92,
+      },
+    ],
+    formal_report:
+      "To Whom It May Concern,\n\nI am reporting a piece of online content for promoting potential misinformation.\n\nCategory of Misinformation: Health Misinformation\n\nOriginal Content Summary: The content claims that eating a spoonful of cinnamon can reverse the aging process.\n\nAnalysis: This claim is not supported by credible scientific or medical sources. A review of information from trusted health organizations indicates that while cinnamon may have some health benefits, it is not a cure for aging, and excessive consumption can be harmful. This content poses a risk by promoting unverified health advice.\n\nI request that you review this content for potential violation of your platform's policies regarding health misinformation.\n\nThank you.",
+    raw: {
+      ts: 1724578800000,
+    },
   };
 
   const handleAnalyze = async () => {
     setError(null);
     setLoading(true);
     setResult(null);
+    setInput("");
     try {
-      const res = await axios.post(
-        API_URL,
-        { content: input },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const res = await axios.post(API_URL, { content: input }, { headers: { "Content-Type": "application/json" } });
       setResult(res.data);
     } catch (e) {
       console.warn("API error, showing demo payload", e?.message);
@@ -134,52 +151,31 @@ export default function App() {
     }
   };
 
-  const score = toPercent(result?.score);
+  // compute shown score from credibility_score (robust to 0..1 or 0..100)
+  const score = toPercent(result?.credibility_score ?? result?.score ?? null);
 
   return (
-    <div
-      className="min-h-screen w-full"
-      style={{ ...cssVars, background: "var(--bg)" }}
-    >
+    <div className="min-h-screen w-full" style={{ ...cssVars, background: "var(--bg)" }}>
       {/* HEADER */}
       <Header theme={theme} setTheme={setTheme} />
 
       {/* HERO 3D SECTION - fills viewport */}
-      <HeroSection
-        theme={theme}
-        input={input}
-        setInput={setInput}
-        handleAnalyze={handleAnalyze}
-        loading={loading}
-        error={error}
-      />
+      <HeroSection theme={theme} input={input} setInput={setInput} handleAnalyze={handleAnalyze} loading={loading} error={error} />
 
-      {/* RESULTS SECTION */}
-      <ResultSection score={score} result={result} />
+      {/* RESULTS SECTION (pass setter for raw modal) */}
+      <ResultSection score={score} result={result} setRawOpen={setRawOpen} />
 
       {/* FOOTER */}
       <footer className="py-10">
-        <div
-          className="max-w-6xl mx-auto px-4 text-sm"
-          style={{ color: "var(--subtext)" }}
-        >
-          Built with React, Tailwind, and 3D (Spline/three.js). Paste your
-          Spline scene URL in the code to enable the movable Spline experience.
+        <div className="max-w-6xl mx-auto px-4 text-sm" style={{ color: "var(--subtext)" }}>
+          Built with React, Tailwind, and 3D (Spline/three.js). Paste your Spline scene URL in the code to enable the movable Spline experience.
         </div>
       </footer>
 
       {/* RAW JSON MODAL */}
-      <Modal
-        open={rawOpen}
-        title="Raw Response"
-        onClose={() => setRawOpen(false)}
-      >
+      <Modal open={rawOpen} title="Raw Response" onClose={() => setRawOpen(false)}>
         <pre className="text-xs overflow-auto" style={{ color: "var(--text)" }}>
-          {JSON.stringify(
-            result ?? { hint: "Press Analyze to see a response." },
-            null,
-            2
-          )}
+          {JSON.stringify(result ?? { hint: "Press Analyze to see a response." }, null, 2)}
         </pre>
       </Modal>
     </div>
