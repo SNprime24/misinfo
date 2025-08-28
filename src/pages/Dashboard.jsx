@@ -1,7 +1,8 @@
 // src/pages/Dashboard.jsx
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import Graph from "../components/Graph";
+import Header from "../components/Header";
 
 /**
  * Dashboard.jsx
@@ -171,9 +172,7 @@ function RadarChart({ axes = [], values = [], size = 180 }) {
 }
 
 // ----------------- Dashboard component -----------------
-export default function Dashboard() {
-  // theme with default "dark"
-  const [theme, setTheme] = useState("dark");
+export default function Dashboard({theme, setTheme}) {
   const palette = theme === "dark" ? darkColors : lightColors;
 
   const cssVars = useMemo(
@@ -218,32 +217,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen p-6" style={{ ...cssVars, background: "var(--bg)" }}>
-      <div className="max-w-7xl mx-auto">
-        <header className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: "var(--text)" }}>Authority Dashboard</h1>
-            <p className="text-sm mt-1" style={{ color: "var(--subtext)" }}>
-              Overview (dummy data) — each card has its own accent and good contrast for dark & light modes.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="px-3 py-2 rounded-xl border" style={{ borderColor: "var(--border)", color: "var(--text)" }}>
-              Last 30 days
-            </div>
-            <button
-              onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-              className="px-3 py-2 rounded-xl border inline-flex items-center gap-2"
-              style={{ borderColor: "var(--border)", color: "var(--text)" }}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              <span className="text-sm">{theme === "dark" ? "Light" : "Dark"}</span>
-            </button>
-          </div>
-        </header>
-
+    <div className="min-h-screen" style={{ ...cssVars, background: "var(--bg)" }}>
+      <Header theme = {theme} setTheme = {setTheme} />
+      <div className="max-w-7xl mx-auto mt-6">
         <div className="grid grid-cols-12 gap-6">
           {/* Left side */}
           <div className="col-span-12 lg:col-span-7 space-y-6">
@@ -536,9 +512,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="mt-6 text-center text-xs" style={{ color: "var(--subtext)" }}>
-          Dummy data used. Replace arrays with real API calls. Theme toggles between dark/light and each card uses good contrast for readability.
-        </div>
+        <footer className="py-10">
+          <div
+            className="max-w-6xl mx-auto px-4 text-sm text-center"
+            style={{ color: "var(--subtext)" }}
+          >
+            WhiteBrains Misinformation Combater @2025
+          </div>
+        </footer>
       </div>
     </div>
   );

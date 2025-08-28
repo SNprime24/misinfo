@@ -6,26 +6,26 @@ import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ResultSection from "../components/ResultSection";
 
-// ---- COLOR SYSTEM (Light & Dark) ----
-const lightColors = {
-  bg: "rgb(245,245,245)",
-  card: "rgba(255,255,255,0.8)",
-  text: "rgb(15,23,42)",
-  subtext: "rgba(15,23,42,0.7)",
-  border: "rgba(15,23,42,0.1)",
-  accent: "rgb(0,72,255)",
-  midBlue: "rgb(20,50,200)",
-  darkBlue: "rgb(10,30,120)",
-};
 const darkColors = {
-  bg: "rgb(33,33,33)",
-  card: "rgba(255,255,255,0.06)",
-  text: "rgb(244,244,244)",
-  subtext: "rgba(244,244,244,0.7)",
-  border: "rgba(255,255,255,0.08)",
-  accent: "rgb(0,72,255)",
-  midBlue: "rgb(20,50,200)",
-  darkBlue: "rgb(10,30,120)",
+  bg: "rgb(10,12,20)",
+  card: "rgba(255,255,255,0.03)",
+  text: "rgb(230,230,235)",
+  subtext: "rgba(230,230,235,0.66)",
+  border: "rgba(255,255,255,0.06)",
+  accent: "rgb(6,165,225)",
+  midBlue: "rgb(50,110,220)",
+  darkBlue: "rgb(10,40,120)",
+};
+
+const lightColors = {
+  bg: "rgb(248,250,252)",
+  card: "rgba(255,255,255,0.9)",
+  text: "rgb(15,23,42)",
+  subtext: "rgba(15,23,42,0.66)",
+  border: "rgba(15,23,42,0.06)",
+  accent: "rgb(0,110,255)",
+  midBlue: "rgb(20,90,200)",
+  darkBlue: "rgb(8,30,110)",
 };
 
 // robust toPercent - accepts 0..1 or 0..100
@@ -78,8 +78,7 @@ function Modal({ open, title, onClose, children }) {
 }
 
 // ---- HOME PAGE ----
-export default function Home() {
-  const [theme, setTheme] = useState("dark");
+export default function Home({theme, setTheme}) {
   const palette = theme === "dark" ? darkColors : lightColors;
 
   const cssVars = useMemo(

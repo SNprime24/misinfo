@@ -1,13 +1,16 @@
 import { Moon, Sun } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const Header = ({ theme, setTheme }) => {
+const Header = ({theme, setTheme}) => {
+  const navigate = useNavigate();
+
   return (
     <header
       className="w-full sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/5 border-b"
       style={{ borderColor: "var(--border)" }}
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 justify-between">
-        <div className="flex items-center gap-3">
+        <a onClick = {() => {navigate("/")}} className="flex items-center gap-3 cursor-pointer">
           <div
             className="h-8 w-8 rounded-2xl"
             style={{ background: "var(--accent)" }}
@@ -23,8 +26,18 @@ const Header = ({ theme, setTheme }) => {
               Misinformation Combater
             </div>
           </div>
-        </div>
+        </a>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => { navigate("/dashboard") }}
+            className="px-3 py-1.5 rounded-xl border flex items-center gap-2 cursor-pointer"
+            style={{ borderColor: "var(--border)", color: "var(--text)" }}
+            aria-label="Toggle theme"
+          >
+            <span className="text-sm">
+              Dashboard
+            </span>
+          </button>
           <a
             href="#learn"
             className="text-sm px-3 py-1.5 rounded-xl border hover:opacity-90"
@@ -33,15 +46,26 @@ const Header = ({ theme, setTheme }) => {
             Learn
           </a>
           <button
-            onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-            className="px-3 py-1.5 rounded-xl border flex items-center gap-2"
+            onClick={() =>
+              setTheme((t) => {
+                const next = t === "dark" ? "light" : "dark";
+                try {
+                  localStorage.setItem("theme", next); // persist
+                  document.documentElement.setAttribute("data-theme", next);
+                  if (next === "dark") document.documentElement.classList.add("dark");
+                  else document.documentElement.classList.remove("dark");
+                } catch (e) {
+                  console.warn("Could not persist theme", e);
+                }
+                return next;
+              })
+            }
+            className="px-3 py-1.5 rounded-xl border flex items-center gap-2 cursor-pointer"
             style={{ borderColor: "var(--border)", color: "var(--text)" }}
             aria-label="Toggle theme"
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            <span className="text-sm">
-              {theme === "dark" ? "Light" : "Dark"}
-            </span>
+            <span className="text-sm">{theme === "dark" ? "Light" : "Dark"}</span>
           </button>
         </div>
       </div>
