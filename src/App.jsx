@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 
@@ -45,14 +45,17 @@ function Modal({ open, title, onClose, children }) {
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
       <div className="absolute inset-0 flex items-center justify-center p-4">
         <div
-          className="w-full max-w-3xl rounded-2xl shadow-2xl border"
-          style={{ background: "var(--card)", borderColor: "var(--border)" }}
+          className="w-full max-w-3xl rounded-2xl shadow-2xl border dark:bg-[#2D2D2D]"
+          style={{ borderColor: "var(--border)" }}
         >
           <div
             className="flex items-center justify-between p-4 border-b"
             style={{ borderColor: "var(--border)" }}
           >
-            <h3 className="text-lg font-semibold" style={{ color: "var(--text)" }}>
+            <h3
+              className="text-lg font-semibold"
+              style={{ color: "var(--text)" }}
+            >
               {title}
             </h3>
             <button
@@ -63,7 +66,10 @@ function Modal({ open, title, onClose, children }) {
               <X size={18} style={{ color: "var(--text)" }} />
             </button>
           </div>
-          <div className="p-4 max-h-[70vh] overflow-auto" style={{ color: "var(--text)" }}>
+          <div
+            className="p-4 max-h-[70vh] overflow-auto"
+            style={{ color: "var(--text)" }}
+          >
             {children}
           </div>
         </div>
@@ -97,10 +103,12 @@ export default function App() {
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
 
+  // 🔑 ref for results section
+  const resultsRef = useRef(null);
+
   const BASE = import.meta.env.VITE_API_URL || "";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
-  // Updated dummy to match the backend schema you provided
   const dummy = {
     credibility_score: 15,
     category: "Health Misinformation",
@@ -138,9 +146,12 @@ export default function App() {
     setError(null);
     setLoading(true);
     setResult(null);
-    setInput("");
     try {
-      const res = await axios.post(API_URL, { content: input }, { headers: { "Content-Type": "application/json" } });
+      const res = await axios.post(
+        API_URL,
+        { content: input },
+        { headers: { "Content-Type": "application/json" } }
+      );
       setResult(res.data);
     } catch (e) {
       console.warn("API error, showing demo payload", e?.message);
@@ -151,31 +162,60 @@ export default function App() {
     }
   };
 
-  // compute shown score from credibility_score (robust to 0..1 or 0..100)
+  // 🔑 scroll into view when result is updated
+  useEffect(() => {
+    if (result && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
+
   const score = toPercent(result?.credibility_score ?? result?.score ?? null);
 
   return (
-    <div className="min-h-screen w-full" style={{ ...cssVars, background: "var(--bg)" }}>
+    <div
+      className="min-h-screen w-full"
+      style={{ ...cssVars, background: "var(--bg)" }}
+    >
       {/* HEADER */}
       <Header theme={theme} setTheme={setTheme} />
 
-      {/* HERO 3D SECTION - fills viewport */}
-      <HeroSection theme={theme} input={input} setInput={setInput} handleAnalyze={handleAnalyze} loading={loading} error={error} />
+      {/* HERO SECTION */}
+      <HeroSection
+        theme={theme}
+        input={input}
+        setInput={setInput}
+        handleAnalyze={handleAnalyze}
+        loading={loading}
+        error={error}
+      />
 
-      {/* RESULTS SECTION (pass setter for raw modal) */}
-      <ResultSection score={score} result={result} setRawOpen={setRawOpen} />
+      {/* RESULTS SECTION */}
+      <div ref={resultsRef}>
+        <ResultSection score={score} result={result} setRawOpen={setRawOpen} />
+      </div>
 
       {/* FOOTER */}
       <footer className="py-10">
-        <div className="max-w-6xl mx-auto px-4 text-sm" style={{ color: "var(--subtext)" }}>
-          Built with React, Tailwind, and 3D (Spline/three.js). Paste your Spline scene URL in the code to enable the movable Spline experience.
+        <div
+          className="max-w-6xl mx-auto px-4 text-sm text-center"
+          style={{ color: "var(--subtext)" }}
+        >
+          WhiteBrains Misinformation Combater @2025
         </div>
       </footer>
 
       {/* RAW JSON MODAL */}
-      <Modal open={rawOpen} title="Raw Response" onClose={() => setRawOpen(false)}>
+      <Modal
+        open={rawOpen}
+        title="Raw Response"
+        onClose={() => setRawOpen(false)}
+      >
         <pre className="text-xs overflow-auto" style={{ color: "var(--text)" }}>
-          {JSON.stringify(result ?? { hint: "Press Analyze to see a response." }, null, 2)}
+          {JSON.stringify(
+            result ?? { hint: "Press Analyze to see a response." },
+            null,
+            2
+          )}
         </pre>
       </Modal>
     </div>
