@@ -1,27 +1,78 @@
-import React, { useMemo, useState, useEffect } from "react";
-import Graph from "../components/Graph";
+import React, { useMemo, useState } from "react";
+import Graph from "../components/Graph2";
 import Header from "../components/Header";
 
+// ----------------- Color Palettes -----------------
+
 const darkColors = {
-  bg: "rgb(10,12,20)",
-  card: "rgba(255,255,255,0.03)",
-  text: "rgb(230,230,235)",
-  subtext: "rgba(230,230,235,0.66)",
-  border: "rgba(255,255,255,0.06)",
-  accent: "rgb(6,165,225)",
-  midBlue: "rgb(50,110,220)",
-  darkBlue: "rgb(10,40,120)",
+  bg: "rgb(11, 22, 44)", // Deep Navy
+  card: "rgb(18, 32, 58)", // Slightly Lighter Navy for cards
+  border: "rgb(30, 48, 80)", // Subtle Border
+  text: "rgb(200, 220, 255)", // Light Powder Blue
+  subtext: "rgb(120, 140, 170)", // Muted Slate Blue
+
+  // Primary Blue Accents
+  accentBlue: "rgb(6, 165, 225)", // Bright Cyan-Blue
+  midBlue: "rgb(50, 110, 220)", // Classic Blue
+  darkBlue: "rgb(10, 40, 120)", // Deep Royal Blue
+
+  // New Green Accents
+  accentGreen: "rgb(0, 255, 135)", // Vibrant Green
+  midGreen: "rgb(50, 200, 100)", // A slightly softer green
+  darkGreen: "rgb(0, 150, 70)", // A deeper green
+};
+
+const darkAccents = {
+  // Gradients
+  gradientBlueGreen:
+    "linear-gradient(to right, rgb(6, 165, 225), rgb(0, 255, 135))",
+  gradientBlue: "linear-gradient(to top, rgb(50, 110, 220), rgb(6, 165, 225))",
+  gradientGreen: "linear-gradient(to top, rgb(50, 200, 100), rgb(0, 255, 135))",
+
+  // Specific element colors for theme consistency
+  line: "rgb(6, 165, 225)",
+  barPrimary: "rgb(0, 255, 135)",
+  barSecondary: "rgb(50, 110, 220)",
+  mapPin: "rgb(0, 255, 135)",
+  highlight: "rgb(6, 165, 225)",
+
+  // Color array for multi-item charts like Pie/Polar
+  palette: [
+    darkColors.accentBlue,
+    darkColors.accentGreen,
+    "rgb(124, 58, 237)", // Violet
+    darkColors.midBlue,
+    darkColors.midGreen,
+    "rgb(249, 115, 22)", // Orange
+  ],
 };
 
 const lightColors = {
-  bg: "rgb(248,250,252)",
-  card: "rgba(255,255,255,0.9)",
-  text: "rgb(15,23,42)",
-  subtext: "rgba(15,23,42,0.66)",
-  border: "rgba(15,23,42,0.06)",
-  accent: "rgb(0,110,255)",
-  midBlue: "rgb(20,90,200)",
-  darkBlue: "rgb(8,30,110)",
+  bg: "rgb(248, 250, 252)",
+  card: "rgba(255, 255, 255, 0.9)",
+  text: "rgb(15, 23, 42)",
+  subtext: "rgba(15, 23, 42, 0.66)",
+  border: "rgba(15, 23, 42, 0.06)",
+  accent: "rgb(0, 110, 255)",
+  midBlue: "rgb(20, 90, 200)",
+  darkBlue: "rgb(8, 30, 110)",
+};
+
+const lightAccents = {
+  // Gradients for light theme
+  gradientBlueGreen: `linear-gradient(to right, ${lightColors.accent}, #10b981)`,
+  gradientBlue: `linear-gradient(to top, ${lightColors.midBlue}, ${lightColors.accent})`,
+  gradientGreen: "linear-gradient(to top, #34d399, #10b981)",
+
+  // Specific element colors
+  line: lightColors.accent,
+  barPrimary: "#10b981",
+  barSecondary: lightColors.midBlue,
+  mapPin: "#10b981",
+  highlight: lightColors.accent,
+
+  // Palette for light theme charts
+  palette: ["#0ea5e9", "#10b981", "#7c3aed", "#3b82f6", "#f59e0b", "#ef4444"],
 };
 
 // ----------------- Small helpers -----------------
@@ -57,12 +108,12 @@ function Sparkline({ data = [], width = 140, height = 36 }) {
     <svg width={w} height={h}>
       <path
         d={d}
-        stroke="var(--accent)"
+        stroke="var(--accentGreen)"
         strokeWidth="2"
         fill="none"
         strokeLinecap="round"
       />
-      <circle cx={last[0]} cy={last[1]} r="3" fill="var(--accent)" />
+      <circle cx={last[0]} cy={last[1]} r="3" fill="var(--accentGreen)" />
     </svg>
   );
 }
@@ -90,7 +141,7 @@ function LineChart({ data = [], w = 320, h = 140 }) {
       <path
         d={path}
         fill="none"
-        stroke="var(--accent)"
+        stroke="var(--accentBlue)"
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -113,12 +164,12 @@ function AreaChart({ data = [], w = 320, h = 140 }) {
     <svg width="100%" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
       <defs>
         <linearGradient id="aGrad" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.88" />
-          <stop offset="100%" stopColor="var(--midBlue)" stopOpacity="0.06" />
+          <stop offset="0%" stopColor="var(--accentGreen)" stopOpacity="0.88" />
+          <stop offset="100%" stopColor="var(--midGreen)" stopOpacity="0.06" />
         </linearGradient>
       </defs>
       <path d={`${top} ${bottom}`} fill="url(#aGrad)" />
-      <path d={top} fill="none" stroke="var(--darkBlue)" strokeWidth="1.25" />
+      <path d={top} fill="none" stroke="var(--darkGreen)" strokeWidth="1.25" />
     </svg>
   );
 }
@@ -132,8 +183,8 @@ function BarChart({ data = [], w = 320, h = 140 }) {
     <svg width="100%" viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none">
       <defs>
         <linearGradient id="barG2" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="var(--midBlue)" />
-          <stop offset="100%" stopColor="var(--accent)" />
+          <stop offset="0%" stopColor="var(--barSecondary)" />
+          <stop offset="100%" stopColor="var(--barPrimary)" />
         </linearGradient>
       </defs>
       {data.map((v, i) => {
@@ -234,9 +285,9 @@ function RadarChart({ axes = [], values = [], size = 180 }) {
       />
       <polygon
         points={valuePts.map((p) => p.join(",")).join(" ")}
-        fill="var(--accent)"
+        fill="var(--accentGreen)"
         fillOpacity="0.14"
-        stroke="var(--accent)"
+        stroke="var(--accentGreen)"
         strokeWidth="1.2"
       />
       {axes.map((a, i) => {
@@ -251,7 +302,8 @@ function RadarChart({ axes = [], values = [], size = 180 }) {
             textAnchor="middle"
             dominantBaseline="middle"
           >
-            {a}
+            {" "}
+            {a}{" "}
           </text>
         );
       })}
@@ -261,21 +313,28 @@ function RadarChart({ axes = [], values = [], size = 180 }) {
 
 // ----------------- Dashboard component -----------------
 export default function Dashboard({ theme, setTheme }) {
-  const palette = theme === "dark" ? darkColors : lightColors;
+  const palette =
+    theme === "dark"
+      ? { ...darkColors, ...darkAccents }
+      : { ...lightColors, ...lightAccents };
 
   const cssVars = useMemo(
-    () => ({
-      ["--bg"]: palette.bg,
-      ["--card"]: palette.card,
-      ["--text"]: palette.text,
-      ["--subtext"]: palette.subtext,
-      ["--border"]: palette.border,
-      ["--accent"]: palette.accent,
-      ["--midBlue"]: palette.midBlue,
-      ["--darkBlue"]: palette.darkBlue,
-    }),
+    () =>
+      Object.fromEntries(
+        Object.entries(palette).map(([key, value]) => [`--${key}`, value])
+      ),
     [palette]
   );
+
+  // Section Header Styles
+  const sectionAccents = {
+    line: { background: palette.gradientBlue },
+    pie: { background: palette.gradientGreen },
+    bar: { background: palette.gradientBlueGreen },
+    radar: { background: palette.gradientGreen },
+    scatter: { background: palette.gradientBlue },
+    map: { background: palette.gradientBlueGreen },
+  };
 
   // dummy data
   const weeklyTraffic = useMemo(() => [120, 160, 110, 190, 230, 210, 260], []);
@@ -312,24 +371,6 @@ export default function Dashboard({ theme, setTheme }) {
   const mixedBar = useMemo(() => [30, 50, 60, 40, 80, 70, 90], []);
   const mixedLine = useMemo(() => [20, 55, 45, 60, 50, 85, 100], []);
 
-  // accents
-  const paletteColors = [
-    "#0ea5e9",
-    "#06b6d4",
-    "#7c3aed",
-    "#34d399",
-    "#fb7185",
-    "#f59e0b",
-  ];
-  const accents = {
-    line: "linear-gradient(90deg,#06b6d4,#0ea5e9)",
-    pie: "linear-gradient(90deg,#f97316,#ef4444)",
-    bar: "linear-gradient(90deg,#7c3aed,#06b6d4)",
-    radar: "linear-gradient(90deg,#10b981,#34d399)",
-    scatter: "linear-gradient(90deg,#60a5fa,#3b82f6)",
-    map: "linear-gradient(90deg,#06b6d4,#7c3aed)",
-  };
-
   const categoryTotal = useMemo(
     () => categoryDistribution.reduce((a, b) => a + b, 0) || 1,
     [categoryDistribution]
@@ -341,7 +382,7 @@ export default function Dashboard({ theme, setTheme }) {
       style={{ ...cssVars, background: "var(--bg)" }}
     >
       <Header theme={theme} setTheme={setTheme} />
-      <div className="max-w-7xl mx-auto mt-6 px-4">
+      <div className="max-w-7xl mx-auto mt-6 px-8">
         <div className="grid grid-cols-12 gap-4 lg:gap-6">
           {/* Left side */}
           <div className="col-span-12 lg:col-span-6 space-y-4 lg:space-y-6">
@@ -364,22 +405,25 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="w-10 h-10 rounded-lg"
-                    style={{ background: accents.line }}
+                    style={sectionAccents.line}
                   />
                   <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>
-                      Line & Area
+                      {" "}
+                      Line & Area{" "}
                     </div>
                     <div
                       className="text-xs"
                       style={{ color: "var(--subtext)" }}
                     >
-                      Trends & infographics
+                      {" "}
+                      Trends & infographics{" "}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Volume
+                  {" "}
+                  Volume{" "}
                 </div>
               </div>
 
@@ -397,7 +441,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Weekly Traffic
+                    {" "}
+                    Weekly Traffic{" "}
                   </div>
                   <LineChart data={weeklyTraffic} />
                 </div>
@@ -414,7 +459,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Infographic (Area)
+                    {" "}
+                    Infographic (Area){" "}
                   </div>
                   <AreaChart data={monthlyTrend} />
                 </div>
@@ -440,22 +486,25 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="w-10 h-10 rounded-lg"
-                    style={{ background: accents.pie }}
+                    style={sectionAccents.pie}
                   />
                   <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>
-                      Pie & Donut
+                      {" "}
+                      Pie & Donut{" "}
                     </div>
                     <div
                       className="text-xs"
                       style={{ color: "var(--subtext)" }}
                     >
-                      Category distribution
+                      {" "}
+                      Category distribution{" "}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Proportion
+                  {" "}
+                  Proportion{" "}
                 </div>
               </div>
 
@@ -463,7 +512,7 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex-shrink-0">
                   <PieChart
                     values={categoryDistribution}
-                    colors={paletteColors}
+                    colors={palette.palette}
                     size={120}
                     donut
                     inner={30}
@@ -486,7 +535,7 @@ export default function Dashboard({ theme, setTheme }) {
                               className="w-3 h-3 rounded-sm"
                               style={{
                                 background:
-                                  paletteColors[i % paletteColors.length],
+                                  palette.palette[i % palette.palette.length],
                               }}
                             />
                             <div style={{ color: "var(--text)" }}>{label}</div>
@@ -519,22 +568,25 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="w-10 h-10 rounded-lg"
-                    style={{ background: accents.bar }}
+                    style={sectionAccents.bar}
                   />
                   <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>
-                      Bar & Mixed
+                      {" "}
+                      Bar & Mixed{" "}
                     </div>
                     <div
                       className="text-xs"
                       style={{ color: "var(--subtext)" }}
                     >
-                      Volume & overlay metrics
+                      {" "}
+                      Volume & overlay metrics{" "}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Monthly
+                  {" "}
+                  Monthly{" "}
                 </div>
               </div>
 
@@ -544,7 +596,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Monthly — Volume & Credibility
+                    {" "}
+                    Monthly — Volume & Credibility{" "}
                   </div>
                   <div style={{ width: "100%", height: 220 }}>
                     <svg
@@ -554,14 +607,14 @@ export default function Dashboard({ theme, setTheme }) {
                     >
                       <defs>
                         <linearGradient id="mbar2" x1="0" x2="0" y1="0" y2="1">
-                          <stop offset="0%" stopColor="#7c3aed" />
-                          <stop offset="100%" stopColor="#06b6d4" />
+                          <stop offset="0%" stopColor="var(--barSecondary)" />
+                          <stop offset="100%" stopColor="var(--barPrimary)" />
                         </linearGradient>
                       </defs>
                       {mixedBar.map((v, i) => {
-                        const w = 700;
-                        const h = 160;
-                        const pad = 40;
+                        const w = 700,
+                          h = 160,
+                          pad = 40;
                         const bw = (w - pad * 2) / mixedBar.length - 8;
                         const max = Math.max(...mixedBar);
                         const barH = (v / max) * h;
@@ -594,7 +647,7 @@ export default function Dashboard({ theme, setTheme }) {
                           <path
                             d={pointsToPath(pts)}
                             fill="none"
-                            stroke="var(--accent)"
+                            stroke="var(--accentBlue)"
                             strokeWidth="3"
                             strokeLinecap="round"
                           />
@@ -618,7 +671,8 @@ export default function Dashboard({ theme, setTheme }) {
                       className="text-sm font-semibold mb-2"
                       style={{ color: "var(--text)" }}
                     >
-                      Volume (Bar)
+                      {" "}
+                      Volume (Bar){" "}
                     </div>
                     <BarChart data={[120, 90, 140, 80, 160, 130, 100]} />
                   </div>
@@ -635,7 +689,8 @@ export default function Dashboard({ theme, setTheme }) {
                       className="text-sm font-semibold mb-2"
                       style={{ color: "var(--text)" }}
                     >
-                      Mini spark
+                      {" "}
+                      Mini spark{" "}
                     </div>
                     <Sparkline data={[50, 70, 60, 90, 80, 100, 95]} />
                   </div>
@@ -658,22 +713,25 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="w-10 h-10 rounded-lg"
-                    style={{ background: accents.radar }}
+                    style={sectionAccents.radar}
                   />
                   <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>
-                      Radar & Polar
+                      {" "}
+                      Radar & Polar{" "}
                     </div>
                     <div
                       className="text-xs"
                       style={{ color: "var(--subtext)" }}
                     >
-                      Multi-axis & radial
+                      {" "}
+                      Multi-axis & radial{" "}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Profile
+                  {" "}
+                  Profile{" "}
                 </div>
               </div>
 
@@ -691,11 +749,11 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Profile Radar
+                    {" "}
+                    Profile Radar{" "}
                   </div>
                   <RadarChart axes={radarAxes} values={radarVals} size={160} />
                 </div>
-
                 <div
                   className="rounded-xl p-2 sm:p-3"
                   style={{
@@ -709,7 +767,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Polar area
+                    {" "}
+                    Polar area{" "}
                   </div>
                   <svg width="100%" viewBox="0 0 200 200">
                     <g transform="translate(100,100)">
@@ -722,7 +781,7 @@ export default function Dashboard({ theme, setTheme }) {
                           <path
                             key={i}
                             d={p}
-                            fill={paletteColors[i % paletteColors.length]}
+                            fill={palette.palette[i % palette.palette.length]}
                             stroke="var(--card)"
                             strokeWidth="0.6"
                           />
@@ -731,17 +790,18 @@ export default function Dashboard({ theme, setTheme }) {
                     </g>
                   </svg>
                 </div>
-
                 <div className="rounded-xl p-2 sm:p-3 md:col-span-2 lg:col-span-1">
                   <div
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Notes
+                    {" "}
+                    Notes{" "}
                   </div>
                   <div className="text-xs" style={{ color: "var(--subtext)" }}>
+                    {" "}
                     Radar shows multiple metrics at a glance. Polar area
-                    showcases relative category magnitudes.
+                    showcases relative category magnitudes.{" "}
                   </div>
                 </div>
               </div>
@@ -764,22 +824,22 @@ export default function Dashboard({ theme, setTheme }) {
               >
                 <span
                   className="w-10 h-10 rounded-lg"
-                  style={{ background: accents.map }}
+                  style={sectionAccents.map}
                 />
                 <div>
                   <div className="font-bold" style={{ color: "var(--text)" }}>
-                    Geographic View
+                    {" "}
+                    Geographic View{" "}
                   </div>
                   <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                    Interactive map of reported items
+                    {" "}
+                    Interactive map of reported items{" "}
                   </div>
                 </div>
               </div>
-
               <div className="w-full h-80 md:h-96 relative">
-                <Graph />
+                <Graph theme={theme} />
               </div>
-
               <div className="p-2 sm:p-4 grid grid-cols-2 gap-3">
                 <div
                   className="rounded-xl p-3"
@@ -791,13 +851,15 @@ export default function Dashboard({ theme, setTheme }) {
                   }}
                 >
                   <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                    Top Regions
+                    {" "}
+                    Top Regions{" "}
                   </div>
                   <div
                     className="mt-2 text-sm sm:text-base font-semibold"
                     style={{ color: "var(--text)" }}
                   >
-                    Mumbai • Delhi • Bengaluru
+                    {" "}
+                    Mumbai • Delhi • Bengaluru{" "}
                   </div>
                 </div>
                 <div
@@ -810,13 +872,15 @@ export default function Dashboard({ theme, setTheme }) {
                   }}
                 >
                   <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                    Avg Response Time
+                    {" "}
+                    Avg Response Time{" "}
                   </div>
                   <div
                     className="mt-2 text-sm sm:text-base font-semibold"
                     style={{ color: "var(--text)" }}
                   >
-                    2.4 hrs
+                    {" "}
+                    2.4 hrs{" "}
                   </div>
                 </div>
               </div>
@@ -832,13 +896,14 @@ export default function Dashboard({ theme, setTheme }) {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="font-bold" style={{ color: "var(--text)" }}>
-                  Sources & Credibility
+                  {" "}
+                  Sources & Credibility{" "}
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  {sourcesCred.length} sources
+                  {" "}
+                  {sourcesCred.length} sources{" "}
                 </div>
               </div>
-
               <div className="space-y-3">
                 {sourcesCred.map((s, i) => {
                   const pct = clamp(s, 0, 100);
@@ -850,7 +915,8 @@ export default function Dashboard({ theme, setTheme }) {
                             className="font-semibold"
                             style={{ color: "var(--text)" }}
                           >
-                            Source {i + 1}
+                            {" "}
+                            Source {i + 1}{" "}
                           </div>
                           <div style={{ color: "var(--subtext)" }}>{pct}%</div>
                         </div>
@@ -862,7 +928,7 @@ export default function Dashboard({ theme, setTheme }) {
                             style={{
                               width: `${pct}%`,
                               height: "100%",
-                              background: `linear-gradient(90deg, ${accents.map})`,
+                              background: "var(--gradientBlueGreen)",
                             }}
                           />
                         </div>
@@ -883,10 +949,12 @@ export default function Dashboard({ theme, setTheme }) {
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="font-bold" style={{ color: "var(--text)" }}>
-                  Quick Actions
+                  {" "}
+                  Quick Actions{" "}
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Policy tools
+                  {" "}
+                  Policy tools{" "}
                 </div>
               </div>
               <div className="flex flex-col gap-3">
@@ -901,7 +969,8 @@ export default function Dashboard({ theme, setTheme }) {
                     color: "var(--text)",
                   }}
                 >
-                  Bulk review flagged (120)
+                  {" "}
+                  Bulk review flagged (120){" "}
                 </button>
                 <button
                   className="px-4 py-2 rounded-xl text-left text-sm"
@@ -914,17 +983,20 @@ export default function Dashboard({ theme, setTheme }) {
                     color: "var(--text)",
                   }}
                 >
-                  Export suspicious content
+                  {" "}
+                  Export suspicious content{" "}
                 </button>
                 <button
                   className="px-4 py-2 rounded-xl text-left text-sm font-semibold"
-                  style={{ background: "var(--accent)", color: "white" }}
+                  style={{ background: "var(--accentBlue)", color: "white" }}
                 >
-                  Open case manager
+                  {" "}
+                  Open case manager{" "}
                 </button>
               </div>
             </section>
 
+            {/* Scatter & Bubble */}
             <section
               className="rounded-3xl border"
               style={{
@@ -939,22 +1011,25 @@ export default function Dashboard({ theme, setTheme }) {
                 <div className="flex items-center gap-3">
                   <span
                     className="w-10 h-10 rounded-lg"
-                    style={{ background: accents.scatter }}
+                    style={sectionAccents.scatter}
                   />
                   <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>
-                      Scatter & Bubble
+                      {" "}
+                      Scatter & Bubble{" "}
                     </div>
                     <div
                       className="text-xs"
                       style={{ color: "var(--subtext)" }}
                     >
-                      Outliers & clusters
+                      {" "}
+                      Outliers & clusters{" "}
                     </div>
                   </div>
                 </div>
                 <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                  Dispersion
+                  {" "}
+                  Dispersion{" "}
                 </div>
               </div>
 
@@ -972,7 +1047,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Scatter — hourly
+                    {" "}
+                    Scatter — hourly{" "}
                   </div>
                   <svg width="100%" viewBox="0 0 400 160">
                     <rect width="100%" height="100%" fill="transparent" />
@@ -985,7 +1061,7 @@ export default function Dashboard({ theme, setTheme }) {
                           cx={x}
                           cy={y}
                           r={3 + (i % 3)}
-                          fill="var(--accent)"
+                          fill="var(--accentBlue)"
                           fillOpacity="0.9"
                         />
                       );
@@ -1006,7 +1082,8 @@ export default function Dashboard({ theme, setTheme }) {
                     className="text-sm font-semibold mb-2"
                     style={{ color: "var(--text)" }}
                   >
-                    Bubble — severity vs reach
+                    {" "}
+                    Bubble — severity vs reach{" "}
                   </div>
                   <svg width="100%" viewBox="0 0 220 140">
                     <rect
@@ -1025,7 +1102,7 @@ export default function Dashboard({ theme, setTheme }) {
                           cx={x}
                           cy={y}
                           r={b.r}
-                          fill={paletteColors[i % paletteColors.length]}
+                          fill={palette.palette[i % palette.palette.length]}
                           fillOpacity="0.92"
                         />
                       );
@@ -1042,7 +1119,8 @@ export default function Dashboard({ theme, setTheme }) {
             className="max-w-6xl mx-auto px-4 text-sm text-center"
             style={{ color: "var(--subtext)" }}
           >
-            WhiteBrains Misinformation Combater @2025
+            {" "}
+            WhiteBrains Misinformation Combater @2025{" "}
           </div>
         </footer>
       </div>
