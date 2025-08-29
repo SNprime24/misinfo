@@ -107,6 +107,10 @@ export default function Home({theme, setTheme}) {
   const BASE = import.meta.env.VITE_API_URL || "";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
+
+  // console.log("Location data:", formData);
+  // navigator.geolocation.getCurrentPosition((position)=>console.log(position));
+
   const dummy = {
     credibility_score: 15,
     category: "Health Misinformation",
@@ -144,12 +148,34 @@ export default function Home({theme, setTheme}) {
     setError(null);
     setLoading(true);
     setResult(null);
+
+    // Wrap geolocation in a Promise to await it
+    const getLocation = () =>
+      new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) =>
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            }),
+          (err) => reject(err)
+        );
+      });
+
     try {
+      const location = await getLocation();
+      console.log(location);
+
       const res = await axios.post(
         API_URL,
-        { content: input },
+        {
+          content: input,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
         { headers: { "Content-Type": "application/json" } }
       );
+
       setResult(res.data);
     } catch (e) {
       console.warn("API error, showing demo payload", e?.message);

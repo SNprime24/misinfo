@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo } from "react";
+import { useRef, useCallback, useMemo, useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -7,11 +7,12 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
+import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import indiaData from "../assets/india.json";
 
-const statesData = [
+let statesData = [
   {
     id: 1,
     name: "Andhra Pradesh",
@@ -55,10 +56,10 @@ const statesData = [
 ];
 
 const stateConnections = [
-  { from: 1, to: 2, type: "Bus" }, // Andhra Pradesh -> Arunachal Pradesh
-  { from: 1, to: 3, type: "Bus" }, // Andhra Pradesh -> Assam
-  { from: 1, to: 4, type: "Bus" }, // Andhra Pradesh -> Bihar
-  { from: 1, to: 5, type: "Bus" }, // Andhra Pradesh -> Chhattisgarh
+  // { from: 1, to: 2, type: "Bus" }, 
+  // { from: 1, to: 3, type: "Bus" }, 
+  // { from: 1, to: 4, type: "Bus" }, 
+  // { from: 1, to: 5, type: "Bus" }, 
 ];
 
 // --- Color Palettes ---
@@ -85,6 +86,50 @@ const lightColors = {
 const App = ({ theme = "dark" }) => {
   const isDark = theme === "dark";
   const geojsonRef = useRef();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const BASE = import.meta.env.VITE_API_URL || "";
+  const API_URL = `${BASE}/api/v1/dashboard/recentReports`;
+
+  const mapScoreToColor = (score) => {
+  if (score > 70) {
+    return '#4CAF50'; // Green
+  } else if (score > 40) {
+    return '#FFC107'; // Yellow
+  } else {
+    return '#F44336'; // Red
+  }
+};
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        setData(response.data);
+      } catch (error) {
+        setError("Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  statesData = data.map((item, id)=>{
+    return ({
+      id: id + 1,
+      name: item.category,
+      latitude: item.location.latitude,
+      longitude: item.location.longitude,
+      color: mapScoreToColor(item.credibility_score),
+      hubs: [],
+    })
+  })
+
+  console.log(statesData);
 
   // Memoize the calculation of India's map boundaries
   const indiaBounds = useMemo(() => {
