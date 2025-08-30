@@ -118,6 +118,8 @@ const App = ({ theme = "dark" }) => {
     fetchData();
   }, []);
 
+  console.log(data);
+
   statesData = data.map((item, id)=>{
     return ({
       id: id + 1,
@@ -129,7 +131,7 @@ const App = ({ theme = "dark" }) => {
     })
   })
 
-  console.log(statesData);
+  // console.log(statesData);
 
   // Memoize the calculation of India's map boundaries
   const indiaBounds = useMemo(() => {
