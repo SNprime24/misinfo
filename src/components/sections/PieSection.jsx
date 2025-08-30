@@ -9,10 +9,11 @@ const categoryColors = {
   Science: "#9C27B0",
   Social: "#E91E63",
   Satire: "#795548",
+  Geopolitics: "#FFC107",
   None: "#9E9E9E",
   Other: "#607D8B",
-  "Unreliable Information": "#FFC107", // amber
-  "Out of Context": "#00BCD4", // cyan
+  "Unreliable Information": "red",
+  "Out of Context": "#00BCD4",
 };
 
 // --- Helper Functions for SVG rendering ---
