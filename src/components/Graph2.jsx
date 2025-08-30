@@ -10,57 +10,10 @@ import {
 import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet.heat"; 
 import indiaData from "../assets/india.json";
 
-let statesData = [
-  {
-    id: 1,
-    name: "Andhra Pradesh",
-    latitude: 17.679,
-    longitude: 83.221,
-    color: "#FF5733", // Using hex colors for better styling
-    hubs: ["Visakhapatnam", "Vijayawada", "Tirupati"],
-  },
-  {
-    id: 2,
-    name: "Arunachal Pradesh",
-    latitude: 27.1338,
-    longitude: 93.6053,
-    color: "#33CFFF",
-    hubs: ["Itanagar", "Tawang", "Bomdila"],
-  },
-  {
-    id: 3,
-    name: "Assam",
-    latitude: 26.2006,
-    longitude: 92.9376,
-    color: "#57FF33",
-    hubs: ["Guwahati", "Jorhat", "Silchar"],
-  },
-  {
-    id: 4,
-    name: "Bihar",
-    latitude: 25.0961,
-    longitude: 85.3131,
-    color: "#FFC300",
-    hubs: ["Patna", "Gaya", "Bhagalpur"],
-  },
-  {
-    id: 5,
-    name: "Chhattisgarh",
-    latitude: 21.2787,
-    longitude: 81.655,
-    color: "#C70039",
-    hubs: ["Raipur", "Bilaspur", "Korba"],
-  },
-];
-
-const stateConnections = [
-  // { from: 1, to: 2, type: "Bus" }, 
-  // { from: 1, to: 3, type: "Bus" }, 
-  // { from: 1, to: 4, type: "Bus" }, 
-  // { from: 1, to: 5, type: "Bus" }, 
-];
+const stateConnections = [];
 
 // --- Color Palettes ---
 const darkColors = {
@@ -82,33 +35,39 @@ const lightColors = {
   line: "rgba(0, 110, 255, 0.7)",
 };
 
-// --- Main Graph Component ---
 const Graph = ({ theme = "dark" }) => {
   const isDark = theme === "dark";
   const geojsonRef = useRef();
-  const [data, setData] = useState([]);
+  const mapRef = useRef(null);
+  const heatRef = useRef(null);
+
+  const [data, setData] = useState([]); // will hold points array from API
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const BASE = import.meta.env.VITE_API_URL || "";
-  const API_URL = `${BASE}/api/v1/dashboard/recentReports`;
+  const API_URL = `${BASE}/api/v1/dashboard/heatmap`;
 
-  const mapScoreToColor = (score) => {
-  if (score > 70) {
-    return '#4CAF50'; // Green
-  } else if (score > 40) {
-    return '#FFC107'; // Yellow
-  } else {
-    return '#F44336'; // Red
-  }
-};
+  // --- gradient sampled to mimic the image legend (cold -> hot)
+  // stops go from 0.0 -> 1.0 (leaflet.heat uses 0..1 gradient)
+  const heatGradient = {
+    0.0: "#08306b", // deep cold blue
+    0.12: "#2c7bb6", // lighter blue
+    0.30: "#7fcdbb", // cyan / greenish
+    0.50: "#ffffbf", // yellow
+    0.70: "#fdae61", // orange
+    0.88: "#d7191c", // red
+    1.0: "#800026", // deep red (highest intensity)
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(API_URL);
-        setData(response.data);
-      } catch (error) {
+        // API returns { points: [...] } — protect against different shapes
+        const points = response?.data?.points ?? response?.data ?? [];
+        setData(points);
+      } catch (err) {
         setError("Failed to fetch data");
       } finally {
         setLoading(false);
@@ -116,26 +75,25 @@ const Graph = ({ theme = "dark" }) => {
     };
 
     fetchData();
-  }, []);
+  }, [API_URL]);
 
-  console.log(data);
+  // convert API points to marker data and heat points
+  const statesData = useMemo(() => {
+    // If your original markers used one per "state", you can adapt this.
+    // For now we create markers directly from returned points (if you prefer
+    // aggregated state markers, do aggregation separately).
+    return (data || []).map((pt, i) => ({
+      id: `p-${i}`,
+      name: pt.report_summary ?? `Point ${i}`,
+      latitude: pt.latitude,
+      longitude: pt.longitude,
+      intensity: typeof pt.intensity === "number" ? pt.intensity : 0,
+      raw: pt,
+    }));
+  }, [data]);
 
-  statesData = data.map((item, id)=>{
-    return ({
-      id: id + 1,
-      name: item.category,
-      latitude: item.location.latitude,
-      longitude: item.location.longitude,
-      color: mapScoreToColor(item.credibility_score),
-      hubs: [],
-    })
-  })
-
-  // console.log(statesData);
-
-  // Memoize the calculation of India's map boundaries
+  // prepare india bounds (unchanged)
   const indiaBounds = useMemo(() => {
-    // If the GeoJSON data is empty, provide fallback coordinates for India
     if (!indiaData || !indiaData.features || indiaData.features.length === 0) {
       return L.latLngBounds(L.latLng(6, 68), L.latLng(35, 97));
     }
@@ -143,15 +101,12 @@ const Graph = ({ theme = "dark" }) => {
     return geoJsonLayer.getBounds().pad(0.1);
   }, []);
 
-  // --- Use the 'whenCreated' prop to set initial bounds ---
-  // This avoids context issues with the useMap hook in a child component
-  const setMapBounds = (map) => {
-    if (map && indiaBounds.isValid()) {
-      map.fitBounds(indiaBounds);
-    }
+  const setMapCreated = (map) => {
+    mapRef.current = map;
+    if (map && indiaBounds.isValid()) map.fitBounds(indiaBounds);
   };
 
-  // --- Styles ---
+  // styles (unchanged)
   const style = useMemo(
     () => ({
       dark: {
@@ -170,15 +125,6 @@ const Graph = ({ theme = "dark" }) => {
     []
   );
 
-  const highlightStyle = useMemo(
-    () => ({
-      dark: { fillColor: darkColors.midBlue, fillOpacity: 0.8, weight: 2 },
-      light: { fillColor: lightColors.accent, fillOpacity: 0.9, weight: 2 },
-    }),
-    []
-  );
-
-  // --- Tile Layer Configuration ---
   const tileLayer = useMemo(
     () => ({
       dark: {
@@ -197,27 +143,81 @@ const Graph = ({ theme = "dark" }) => {
 
   const currentTileLayer = isDark ? tileLayer.dark : tileLayer.light;
 
-  // --- Create Custom Marker Icons ---
+  // create marker icon (unchanged)
   const createCustomIcon = (color) => {
-    // This is a common fix for Leaflet in some bundlers/environments
     delete L.Icon.Default.prototype._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl:
         "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
       iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      shadowUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
     });
 
     return L.divIcon({
       html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px ${color};"></div>`,
-      className: "custom-marker-icon", // Avoids conflicts with default styles
+      className: "custom-marker-icon",
       iconSize: [16, 16],
       iconAnchor: [8, 8],
     });
   };
 
-  // --- Prepare Connection Lines ---
+  // --- Heat layer effect: create/replace heat layer whenever data or theme changes
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // prepare heat points: filter out invalid coords like 0,0
+    const heatPoints = (data || [])
+      .filter(
+        (p) =>
+          p &&
+          typeof p.latitude === "number" &&
+          typeof p.longitude === "number" &&
+          !(p.latitude === 0 && p.longitude === 0)
+      )
+      .map((p) => {
+        // clamp intensity to 0..1
+        const intensity = Math.max(0, Math.min(1, Number(p.intensity) || 0));
+        // leaflet.heat expects [lat, lng, intensity]
+        return [p.latitude, p.longitude, intensity];
+      });
+
+    // remove existing heat layer if present
+    if (heatRef.current) {
+      try {
+        heatRef.current.remove();
+      } catch (err) {
+        /* ignore */
+      }
+      heatRef.current = null;
+    }
+
+    // if no points, nothing to add
+    if (!heatPoints.length) return;
+
+    // Add heat layer with options tuned to your visual reference
+    // radius controls the spread (in pixels), blur smooths it out
+    heatRef.current = L.heatLayer(heatPoints, {
+      radius: 25, // adjust to make patch sizes similar to reference
+      blur: 18,
+      maxZoom: 10,
+      // the gradient uses 0..1 keys as strings in leaflet.heat
+      gradient: heatGradient,
+      // you can also tweak minOpacity or max to emphasize
+      minOpacity: 0.2,
+    }).addTo(mapRef.current);
+
+    // cleanup on unmount
+    return () => {
+      if (heatRef.current) {
+        try {
+          heatRef.current.remove();
+        } catch (err) {}
+        heatRef.current = null;
+      }
+    };
+  }, [data, isDark]); // re-run when data or theme changes
+
+  // you already had connectionLines; adapt it to statesData or keep as before
   const connectionLines = useMemo(() => {
     const statesById = statesData.reduce((acc, state) => {
       acc[state.id] = state;
@@ -247,8 +247,13 @@ const Graph = ({ theme = "dark" }) => {
         }
         return null;
       })
-      .filter(Boolean); // Filter out any null entries
-  }, [isDark]);
+      .filter(Boolean);
+  }, [isDark, statesData]);
+
+  // A small guard while loading or error (optional)
+  if (error) {
+    console.error(error);
+  }
 
   return (
     <MapContainer
@@ -263,7 +268,7 @@ const Graph = ({ theme = "dark" }) => {
       attributionControl={false}
       maxBounds={indiaBounds}
       minZoom={3.5}
-      whenCreated={setMapBounds}
+      whenCreated={setMapCreated}
     >
       <TileLayer {...currentTileLayer} />
 
@@ -273,31 +278,52 @@ const Graph = ({ theme = "dark" }) => {
         style={() => (isDark ? style.dark : style.light)}
       />
 
-      {statesData.map((state) => (
-        <Marker
-          key={`marker-${state.id}`}
-          position={[state.latitude, state.longitude]}
-          icon={createCustomIcon(state.color)}
-        >
-          <Popup>
-            <div
-              style={{
-                color: isDark ? "white" : "black",
-                backgroundColor: isDark ? darkColors.card : "white",
-                border: `1px solid ${
-                  isDark ? darkColors.border : lightColors.border
-                }`,
-                padding: "8px",
-                borderRadius: "4px",
-              }}
-            >
-              <strong>{state.name}</strong>
-              <br />
-              Hubs: {state.hubs.join(", ")}
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {statesData.map((state) => {
+        // small skip if lat/lng invalid
+        if (
+          !state.latitude ||
+          !state.longitude ||
+          (state.latitude === 0 && state.longitude === 0)
+        )
+          return null;
+
+        // color marker by intensity using same gradient idea:
+        const color = state.intensity >= 0.9
+          ? "#d7191c"
+          : state.intensity >= 0.7
+          ? "#fdae61"
+          : state.intensity >= 0.4
+          ? "#ffffbf"
+          : state.intensity >= 0.15
+          ? "#7fcdbb"
+          : "#2c7bb6";
+
+        return (
+          <Marker
+            key={state.id}
+            position={[state.latitude, state.longitude]}
+            icon={createCustomIcon(color)}
+          >
+            <Popup>
+              <div
+                style={{
+                  color: isDark ? "white" : "black",
+                  backgroundColor: isDark ? darkColors.card : "white",
+                  border: `1px solid ${
+                    isDark ? darkColors.border : lightColors.border
+                  }`,
+                  padding: "8px",
+                  borderRadius: "4px",
+                }}
+              >
+                <strong>{state.name}</strong>
+                <br />
+                Intensity: {state.intensity}
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
 
       {connectionLines}
     </MapContainer>

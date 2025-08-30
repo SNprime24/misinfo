@@ -83,7 +83,7 @@ export default function PieSection({ theme, sectionAccents, palette }) {
 
     // sort by count, excluding "None" from ranking
     const sorted = entries
-        .filter(([key]) => key !== "None")
+        .filter(([key]) => key !== "Other" || k !== "None")
         .sort((a, b) => b[1] - a[1]);
 
     // top 5 + remainder
