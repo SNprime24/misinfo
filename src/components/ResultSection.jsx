@@ -479,7 +479,7 @@ export default function ResultSection({
 
                 {/* X (Twitter) */}
                 <a
-                  href="https://help.twitter.com/en/forms/safety-and-sensitive-content/report-a-tweet"
+                  href="https://help.x.com/en/safety-and-security/report-a-post"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -508,7 +508,7 @@ export default function ResultSection({
 
                 {/* Facebook */}
                 <a
-                  href="https://www.facebook.com/help/175372695929542"
+                  href="https://www.facebook.com/help/1380418588640631/?helpref=hc_fnav"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"

@@ -224,7 +224,7 @@ export default function Home({theme, setTheme}) {
           className="max-w-6xl mx-auto px-4 text-sm text-center"
           style={{ color: "var(--subtext)" }}
         >
-          WhiteBrains Misinformation Combater @2025
+          BlueBrains Misinformation Combater @2025
         </div>
       </footer>
 
