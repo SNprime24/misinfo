@@ -13,17 +13,21 @@ import ScatterBubbleSection from "../components/sections/ScatterBubbleSection";
 
 // ----------------- Color Palettes -----------------
 const darkColors = {
-  bg: "rgb(11, 22, 44)",
-  card: "rgb(18, 32, 58)",
-  border: "rgb(30, 48, 80)",
-  text: "rgb(200, 220, 255)",
-  subtext: "rgb(120, 140, 170)",
-  accentBlue: "rgb(6, 165, 225)",
-  midBlue: "rgb(50, 110, 220)",
-  darkBlue: "rgb(10, 40, 120)",
-  accentGreen: "rgb(0, 255, 135)",
-  midGreen: "rgb(50, 200, 100)",
-  darkGreen: "rgb(0, 150, 70)",
+  bg: "rgb(10,12,20)", // Deep Navy
+  card: "rgb(18, 32, 58)", // Slightly Lighter Navy for cards
+  border: "rgb(30, 48, 80)", // Subtle Border
+  text: "rgb(200, 220, 255)", // Light Powder Blue
+  subtext: "rgb(120, 140, 170)", // Muted Slate Blue
+
+  // Primary Blue Accents
+  accentBlue: "rgb(6, 165, 225)", // Bright Cyan-Blue
+  midBlue: "rgb(50, 110, 220)", // Classic Blue
+  darkBlue: "rgb(10, 40, 120)", // Deep Royal Blue
+
+  // New Green Accents
+  accentGreen: "rgb(0, 255, 135)", // Vibrant Green
+  midGreen: "rgb(50, 200, 100)", // A slightly softer green
+  darkGreen: "rgb(0, 150, 70)", // A deeper green
 };
 
 const darkAccents = {
