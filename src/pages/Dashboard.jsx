@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import Header from "../components/Header";
-import Graph from "../components/Graph"; // existing
 // charts/sections
 import LineAreaSection from "../components/sections/LineAreaSection";
 import PieSection from "../components/sections/PieSection";
