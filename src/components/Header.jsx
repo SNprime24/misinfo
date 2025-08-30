@@ -1,26 +1,32 @@
 import { Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const Header = ({theme, setTheme}) => {
+const Header = ({ theme, setTheme }) => {
   const navigate = useNavigate();
 
   return (
     <header
-      className="w-full sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-white/5 border-b"
+      className="w-full sticky top-0 z-30 bg-transparent backdrop-blur  border-b"
       style={{ borderColor: "var(--border)" }}
     >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 justify-between">
-        <a onClick = {() => {navigate("/")}} className="flex items-center gap-3 cursor-pointer">
-          <div
-            className="h-8 w-8 rounded-2xl"
-            style={{ background: "var(--accent)" }}
+        <a
+          onClick={() => {
+            navigate("/");
+          }}
+          className="flex items-center gap-3 cursor-pointer"
+        >
+          <img
+            src="/download.png"
+            alt="BlueBrains Logo"
+            className="h-8 w-8 rounded-xl object-cover"
           />
           <div>
             <div
               className="text-sm tracking-widest font-bold uppercase"
               style={{ color: "var(--text)" }}
             >
-              WhiteBrains
+              BlueBrains
             </div>
             <div className="text-xs" style={{ color: "var(--subtext)" }}>
               Misinformation Combater
@@ -29,22 +35,16 @@ const Header = ({theme, setTheme}) => {
         </a>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => { navigate("/dashboard") }}
+            onClick={() => {
+              navigate("/dashboard");
+            }}
             className="px-3 py-1.5 rounded-xl border flex items-center gap-2 cursor-pointer"
             style={{ borderColor: "var(--border)", color: "var(--text)" }}
             aria-label="Toggle theme"
           >
-            <span className="text-sm">
-              Dashboard
-            </span>
+            <span className="text-sm">Dashboard</span>
           </button>
-          <a
-            href="#learn"
-            className="text-sm px-3 py-1.5 rounded-xl border hover:opacity-90"
-            style={{ borderColor: "var(--border)", color: "var(--text)" }}
-          >
-            Learn
-          </a>
+
           <button
             onClick={() =>
               setTheme((t) => {
@@ -52,7 +52,8 @@ const Header = ({theme, setTheme}) => {
                 try {
                   localStorage.setItem("theme", next); // persist
                   document.documentElement.setAttribute("data-theme", next);
-                  if (next === "dark") document.documentElement.classList.add("dark");
+                  if (next === "dark")
+                    document.documentElement.classList.add("dark");
                   else document.documentElement.classList.remove("dark");
                 } catch (e) {
                   console.warn("Could not persist theme", e);
@@ -65,7 +66,9 @@ const Header = ({theme, setTheme}) => {
             aria-label="Toggle theme"
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-            <span className="text-sm">{theme === "dark" ? "Light" : "Dark"}</span>
+            <span className="text-sm">
+              {theme === "dark" ? "Light" : "Dark"}
+            </span>
           </button>
         </div>
       </div>

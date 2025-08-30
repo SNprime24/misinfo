@@ -5,7 +5,7 @@ import Header from "../components/Header";
 // ----------------- Color Palettes -----------------
 
 const darkColors = {
-  bg: "rgb(11, 22, 44)", // Deep Navy
+  bg: "rgb(10,12,20)", // Deep Navy
   card: "rgb(18, 32, 58)", // Slightly Lighter Navy for cards
   border: "rgb(30, 48, 80)", // Subtle Border
   text: "rgb(200, 220, 255)", // Light Powder Blue

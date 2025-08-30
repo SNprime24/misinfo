@@ -35,7 +35,9 @@ const HeroSection = ({
   const validateAndSetFile = (f) => {
     if (!f) return;
     if (f.size > MAX_FILE_SIZE_BYTES) {
-      const msg = `File too large. Max ${MAX_FILE_SIZE_BYTES / (1024 * 1024)} MB.`;
+      const msg = `File too large. Max ${
+        MAX_FILE_SIZE_BYTES / (1024 * 1024)
+      } MB.`;
       if (setError) setError(msg); // propagate to parent if possible
       else console.warn(msg);
       return;
@@ -99,7 +101,7 @@ const HeroSection = ({
     <section className="relative h-screen w-full overflow-hidden">
       <div className="absolute inset-0">
         <iframe
-          src="https://my.spline.design/particleaibrain-DVMozu9KHZbquQ2N2fnJZUok/"
+          src="https://my.spline.design/cybernetwork-2vreeLlp7aehGATtB7A6cw8U/"
           frameBorder="0"
           width="100%"
           height="100%"
@@ -115,9 +117,9 @@ const HeroSection = ({
               initial={{ y: 24, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="rounded-3xl shadow-2xl border p-4 md:p-6 backdrop-blur"
+              className="rounded-3xl shadow-2xl border p-4 md:p-6 backdrop-blur-md"
               style={{
-                background: "var(--card)",
+                // background: "var(--card)",
                 borderColor: "var(--border)",
               }}
               onDragOver={handleDragOver}
@@ -174,8 +176,14 @@ const HeroSection = ({
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center">
-                    <File className="w-8 h-8 mb-2" style={{ color: "var(--text)" }} />
-                    <p className="font-semibold" style={{ color: "var(--text)" }}>
+                    <File
+                      className="w-8 h-8 mb-2"
+                      style={{ color: "var(--text)" }}
+                    />
+                    <p
+                      className="font-semibold"
+                      style={{ color: "var(--text)" }}
+                    >
                       {file.name}
                     </p>
                     <p className="text-sm" style={{ color: "var(--subtext)" }}>
@@ -205,7 +213,10 @@ const HeroSection = ({
                       <button
                         onClick={() => fileInputRef.current.click()}
                         className="text-sm px-3 py-1 rounded-md border"
-                        style={{ borderColor: "var(--border)", color: "var(--text)" }}
+                        style={{
+                          borderColor: "var(--border)",
+                          color: "var(--text)",
+                        }}
                       >
                         Replace
                       </button>
@@ -233,7 +244,10 @@ const HeroSection = ({
               </div>
 
               {error && (
-                <div className="mt-3 text-sm text-center" style={{ color: "var(--subtext)" }}>
+                <div
+                  className="mt-3 text-sm text-center"
+                  style={{ color: "var(--subtext)" }}
+                >
                   {error}
                 </div>
               )}
