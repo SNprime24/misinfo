@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.heat"; 
+import "leaflet.heat/dist/leaflet-heat.js";
 import indiaData from "../assets/india.json";
 
 const stateConnections = [];
@@ -53,9 +53,9 @@ const Graph = ({ theme = "dark" }) => {
   const heatGradient = {
     0.0: "#08306b", // deep cold blue
     0.12: "#2c7bb6", // lighter blue
-    0.30: "#7fcdbb", // cyan / greenish
-    0.50: "#ffffbf", // yellow
-    0.70: "#fdae61", // orange
+    0.3: "#7fcdbb", // cyan / greenish
+    0.5: "#ffffbf", // yellow
+    0.7: "#fdae61", // orange
     0.88: "#d7191c", // red
     1.0: "#800026", // deep red (highest intensity)
   };
@@ -150,7 +150,8 @@ const Graph = ({ theme = "dark" }) => {
       iconRetinaUrl:
         "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
       iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+      shadowUrl:
+        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
     });
 
     return L.divIcon({
@@ -267,7 +268,7 @@ const Graph = ({ theme = "dark" }) => {
       zoomControl={false}
       attributionControl={false}
       maxBounds={indiaBounds}
-      minZoom={3.5}
+      minZoom={2}
       whenCreated={setMapCreated}
     >
       <TileLayer {...currentTileLayer} />
@@ -288,37 +289,34 @@ const Graph = ({ theme = "dark" }) => {
           return null;
 
         // color marker by intensity using same gradient idea:
-        const color = state.intensity >= 0.9
-          ? "#d7191c"
-          : state.intensity >= 0.7
-          ? "#fdae61"
-          : state.intensity >= 0.4
-          ? "#ffffbf"
-          : state.intensity >= 0.15
-          ? "#7fcdbb"
-          : "#2c7bb6";
+        const color =
+          state.intensity >= 0.9
+            ? "#d7191c"
+            : state.intensity >= 0.7
+            ? "#fdae61"
+            : state.intensity >= 0.4
+            ? "#ffffbf"
+            : state.intensity >= 0.15
+            ? "#7fcdbb"
+            : "#2c7bb6";
 
         return (
           <Marker
             key={state.id}
             position={[state.latitude, state.longitude]}
             icon={createCustomIcon(color)}
+            style={{ border: `none` }}
           >
-            <Popup>
+            <Popup className="custom-popup">
               <div
                 style={{
                   color: isDark ? "white" : "black",
                   backgroundColor: isDark ? darkColors.card : "white",
-                  border: `1px solid ${
-                    isDark ? darkColors.border : lightColors.border
-                  }`,
-                  padding: "8px",
-                  borderRadius: "4px",
+                  padding: "1px 12px",
                 }}
               >
-                <strong>{state.name}</strong>
-                <br />
-                Intensity: {state.intensity}
+                <p>{state.name}</p>
+                <p>Intensity: {state.intensity}</p>
               </div>
             </Popup>
           </Marker>
