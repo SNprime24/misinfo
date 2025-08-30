@@ -83,7 +83,7 @@ const lightColors = {
 };
 
 // --- Main Graph Component ---
-const App = ({ theme = "dark" }) => {
+const Graph = ({ theme = "dark" }) => {
   const isDark = theme === "dark";
   const geojsonRef = useRef();
   const [data, setData] = useState([]);
@@ -176,25 +176,6 @@ const App = ({ theme = "dark" }) => {
       light: { fillColor: lightColors.accent, fillOpacity: 0.9, weight: 2 },
     }),
     []
-  );
-
-  // --- Event Handlers ---
-  const onEachFeature = useCallback(
-    (feature, layer) => {
-      layer.on({
-        mouseover: (e) => {
-          const targetLayer = e.target;
-          targetLayer.setStyle(
-            isDark ? highlightStyle.dark : highlightStyle.light
-          );
-          targetLayer.bringToFront();
-        },
-        mouseout: (e) => {
-          geojsonRef.current?.resetStyle(e.target);
-        },
-      });
-    },
-    [isDark, highlightStyle]
   );
 
   // --- Tile Layer Configuration ---
@@ -290,7 +271,6 @@ const App = ({ theme = "dark" }) => {
         ref={geojsonRef}
         data={indiaData}
         style={() => (isDark ? style.dark : style.light)}
-        onEachFeature={onEachFeature}
       />
 
       {statesData.map((state) => (
@@ -324,4 +304,4 @@ const App = ({ theme = "dark" }) => {
   );
 };
 
-export default App;
+export default Graph;

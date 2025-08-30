@@ -7,8 +7,8 @@ import BarMixedSection from "../components/sections/BarMixedSection";
 import RadarPolarSection from "../components/sections/RadarPolarSection";
 import MapCard from "../components/sections/MapCard";
 import SourcesCredibility from "../components/sections/SourcesCredibility";
-import QuickActions from "../components/sections/QuickActions";
-import ScatterBubbleSection from "../components/sections/ScatterBubbleSection";
+// import QuickActions from "../components/sections/QuickActions";
+// import ScatterBubbleSection from "../components/sections/ScatterBubbleSection";
 
 // ----------------- Color Palettes -----------------
 const darkColors = {
@@ -94,7 +94,7 @@ export default function Dashboard({ theme, setTheme }) {
   // dummy data (same as before)
   const weeklyTraffic = useMemo(() => [120, 160, 110, 190, 230, 210, 260], []);
   const monthlyTrend = useMemo(() => [20, 50, 40, 75, 60, 90, 120, 140, 130, 170, 190, 210], []);
-  const sourcesCred = useMemo(() => [95, 82, 76, 63, 40], []);
+  const sourcesCred = useMemo(() => [95, 82, 76, 63, 40, 30, 20, 15, 12, 9], []);
   const radarAxes = useMemo(() => ["Clarity", "Tone", "Correctness", "Originality", "SourceQuality"], []);
   const radarVals = useMemo(() => [80, 60, 35, 50, 70], []);
   const bubbleData = useMemo(() => [
@@ -126,8 +126,8 @@ export default function Dashboard({ theme, setTheme }) {
           <div className="col-span-12 lg:col-span-6 space-y-4 lg:space-y-6">
             <MapCard theme={theme} sectionAccents={sectionAccents} />
             <SourcesCredibility sourcesCred={sourcesCred} palette={palette} />
-            <QuickActions theme={theme} />
-            <ScatterBubbleSection scatterData={scatterData} bubbleData={bubbleData} palette={palette} theme={theme} sectionAccents={sectionAccents} />
+            {/* <QuickActions theme={theme} /> */}
+            {/* <ScatterBubbleSection scatterData={scatterData} bubbleData={bubbleData} palette={palette} theme={theme} sectionAccents={sectionAccents} /> */}
           </div>
         </div>
 

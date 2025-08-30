@@ -1,7 +1,7 @@
 import React from "react";
 import MixedBarLine from "../charts/MixedBarLine";
-import BarChart from "../charts/BarChart";
-import Sparkline from "../charts/Sparkline";
+// import BarChart from "../charts/BarChart";
+// import Sparkline from "../charts/Sparkline";
 
 export default function BarMixedSection({
     mixedBar,
@@ -42,23 +42,12 @@ export default function BarMixedSection({
             </div>
 
             <div className="p-2 sm:p-4">
-                <div className="mb-4">
+                <div className="">
                     <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>
                         Monthly — Volume & Credibility
                     </div>
                     <div style={{ width: "100%", height: 220 }}>
                         <MixedBarLine bars={mixedBar} line={mixedLine} />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
-                    <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
-                        <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Volume (Bar)</div>
-                        <BarChart data={[120, 90, 140, 80, 160, 130, 100]} />
-                    </div>
-                    <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
-                        <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Mini spark</div>
-                        <Sparkline data={[50, 70, 60, 90, 80, 100, 95]} />
                     </div>
                 </div>
             </div>
