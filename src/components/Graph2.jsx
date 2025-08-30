@@ -10,7 +10,6 @@ import {
 import axios from "axios";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import "leaflet.heat/dist/leaflet-heat.js";
 import indiaData from "../assets/india.json";
 
 const stateConnections = [];
