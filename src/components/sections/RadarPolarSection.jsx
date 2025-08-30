@@ -1,100 +1,176 @@
-import React, { useState, useEffect } from "react";
-import RadarChart from "../charts/RadarChart";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 
-export default function RadarPolarSection({ theme, sectionAccents }) {
-    const [sources, setSources] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+// --- Local Helper Functions for SVG rendering ---
+const polarToCartesian = (cx, cy, r, angleDeg) => {
+  const rad = ((angleDeg - 90) * Math.PI) / 180.0;
+  return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+};
 
+// --- Local Chart Component: RadarChart ---
+function RadarChart({ axes = [], values = [], size = 220 }) {
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 24; // Radius with padding for labels
+  const numAxes = axes.length;
+
+  // Scale all values from 0-100 to the radius of the chart
+  const max = 100;
+  const valuePts = values.map((v, i) =>
+    polarToCartesian(cx, cy, (v / max) * r, (i / numAxes) * 360)
+  );
+  const axisPts = axes.map((_, i) =>
+    polarToCartesian(cx, cy, r, (i / numAxes) * 360)
+  );
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* Axis lines and background polygon */}
+      <polygon
+        points={axisPts.map((p) => p.join(",")).join(" ")}
+        fill="transparent"
+        stroke="var(--border)"
+        strokeWidth="0.6"
+      />
+      {axisPts.map((p, i) => (
+        <line
+          key={i}
+          x1={cx}
+          y1={cy}
+          x2={p[0]}
+          y2={p[1]}
+          stroke="var(--border)"
+          strokeWidth="0.8"
+        />
+      ))}
+
+      {/* Data polygon */}
+      <polygon
+        points={valuePts.map((p) => p.join(",")).join(" ")}
+        fill="var(--accentGreen)"
+        fillOpacity="0.25"
+        stroke="var(--accentGreen)"
+        strokeWidth="1.5"
+      />
+
+      {/* Axis labels */}
+      {axes.map((axis, i) => {
+        const labelPos = polarToCartesian(cx, cy, r + 12, (i / numAxes) * 360);
+        return (
+          <text
+            key={i}
+            x={labelPos[0]}
+            y={labelPos[1]}
+            fontSize="11"
+            fill="var(--subtext)"
+            textAnchor="middle"
+            dominantBaseline="middle"
+          >
+            {axis}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
+// --- Main Exported Component ---
+export default function RadarPolarSection({ theme, sectionAccents }) {
+  const [radarData, setRadarData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
     const BASE = import.meta.env.VITE_API_URL || "";
     const API_URL = `${BASE}/api/v1/trends/radar`;
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(API_URL);
+        setRadarData(response.data || {});
+      } catch (err) {
+        setError("Failed to fetch radar data");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(API_URL);
-                let fetched = response?.data || {};
-                setSources(fetched);
-            } catch (err) {
-                setError("Failed to fetch data");
-            } finally {
-                setLoading(false);
-            }
-        };
+  // Memoize chart data processing for efficiency
+  const { radarAxes, radarVals } = useMemo(() => {
+    const hasData = radarData && Object.keys(radarData).length > 0;
 
-        fetchData();
-    }, [API_URL]);
+    const axes = hasData
+      ? Object.keys(radarData)
+      : ["Clarity", "Tone", "Correctness", "Originality", "Score"];
+    const values = hasData ? Object.values(radarData) : [85, 70, 60, 75, 80];
 
-    // Safeguard to avoid errors when sources is empty
-    let radarAxes = Object.keys(sources).length
-        ? Object.keys(sources)
-        : ["Clarity", "Tone", "Correctness", "Originality", "SourceQuality"];
-
-    radarAxes = radarAxes.map(axis =>
-        axis === "credibility_score" ? "Score" : axis
+    // Format labels for consistency (e.g., "credibility_score" -> "Credibility Score")
+    const formattedAxes = axes.map((axis) =>
+      axis.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())
     );
-    const radarVals = Object.keys(sources).length ? Object.values(sources) : [100, 60, 35, 50, 70];
 
-    console.log("Radar Data:", sources);
+    return { radarAxes: formattedAxes, radarVals: values };
+  }, [radarData]);
 
-    return (
-        <section
-            className="rounded-3xl border"
-            style={{
-                borderColor: "var(--border)",
-                background: "var(--card)",
-            }}
-        >
-            {/* Header */}
+  return (
+    <section
+      className="rounded-3xl border"
+      style={{ borderColor: "var(--border)", background: "var(--card)" }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b"
+        style={{ borderColor: "var(--border)" }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="w-10 h-10 rounded-lg" style={sectionAccents.radar} />
+          <div>
+            <div className="font-bold" style={{ color: "var(--text)" }}>
+              Metric Averages
+            </div>
+            <div className="text-xs" style={{ color: "var(--subtext)" }}>
+              Recent report analysis
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="p-3 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        {/* Radar Chart Container (2/3 width on desktop) */}
+        <div className="md:col-span-2 rounded-xl flex justify-center items-center">
+          {loading ? (
             <div
-                className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b"
-                style={{ borderColor: "var(--border)" }}
+              className="h-[220px] flex items-center justify-center text-xs"
+              style={{ color: "var(--subtext)" }}
             >
-                <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-lg" style={sectionAccents.radar} />
-                    <div>
-                        <div className="font-bold" style={{ color: "var(--text)" }}>
-                            Scores Radial Chart
-                        </div>
-                        <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                            Multi-axis & radial
-                        </div>
-                    </div>
-                </div>
-                <div className="text-xs" style={{ color: "var(--subtext)" }}>Profile</div>
+              Loading Chart...
             </div>
-
-            {/* Body */}
-            <div className="sm:p-4 gap-2 sm:gap-4">
-                {/* Radar Chart Container */}
-                <div
-                    className="rounded-xl flex justify-center items-center md:col-span-1 lg:col-span-2"
-                    style={{
-                        background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)",
-                    }}
-                >
-                    <div className="w-full max-w-[480px] flex flex-col items-center">
-                        <div className="text-sm font-semibold mb-2 py-3" style={{ color: "var(--text)" }}>
-                            Profile Radar
-                        </div>
-                        <RadarChart
-                            axes={radarAxes}
-                            values={radarVals}
-                            size={Math.min(window.innerWidth * 0.3, 260)} // responsive, max 260px
-                        />
-                    </div>
-                </div>
-
-                {/* Notes Section */}
-                <div className="rounded-xl p-2 sm:p-3 md:col-span-1 lg:col-span-1">
-                    <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Notes</div>
-                    <div className="text-xs" style={{ color: "var(--subtext)" }}>
-                        Radar shows multiple metrics at a glance. Polar area showcases relative category magnitudes.
-                    </div>
-                </div>
+          ) : error ? (
+            <div className="h-[220px] flex items-center justify-center text-xs text-red-500">
+              {error}
             </div>
+          ) : (
+            <RadarChart axes={radarAxes} values={radarVals} size={220} />
+          )}
+        </div>
 
-        </section>
-    );
+        {/* Notes Section (1/3 width on desktop) */}
+        <div className="md:col-span-1 text-center md:text-left">
+          <div
+            className="text-sm font-semibold mb-1"
+            style={{ color: "var(--text)" }}
+          >
+            Metric Analysis
+          </div>
+          <div className="text-xs" style={{ color: "var(--subtext)" }}>
+            This chart shows the average scores across key metrics from recent
+            reports.
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

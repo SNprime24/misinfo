@@ -236,7 +236,7 @@ const TimeframeButton = ({ label, active, onClick }) => (
     onClick={() => onClick(label)}
     className={`px-3 py-1 text-xs rounded-md transition-colors ${
       active
-        ? "bg-[var(--accent)] text-white font-semibold shadow-md"
+        ? "bg-[var(--accent)] text-white font-semibold"
         : "bg-transparent text-[var(--subtext)] hover:bg-[var(--border)]"
     }`}
   >
