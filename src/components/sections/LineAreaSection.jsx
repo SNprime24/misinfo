@@ -36,8 +36,17 @@ const pointsToPath = (pts) =>
 function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
-      <div style={{ width: "100%", height: h, display: "grid", placeContent: "center" }}>
-        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>No data</span>
+      <div
+        style={{
+          width: "100%",
+          height: h,
+          display: "grid",
+          placeContent: "center",
+        }}
+      >
+        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>
+          No data
+        </span>
       </div>
     );
   }
@@ -48,7 +57,9 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   const graphWidth = w - padX;
 
   const min = 0;
-  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(Math.max(...data));
+  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(
+    Math.max(...data)
+  );
 
   const pts = data.map((d, i) => {
     const x = (i / (data.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
@@ -67,18 +78,56 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
         const y = graphHeight - yVal * (graphHeight - 10) - 5;
         return (
           <g key={i}>
-            <text x={padX - 8} y={y + 4} textAnchor="end" fontSize="10" fill="var(--subtext)">{label}</text>
-            <line x1={padX} y1={y} x2={w} y2={y} stroke="var(--border)" strokeWidth="0.5" />
+            <text
+              x={padX - 8}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="10"
+              fill="var(--subtext)"
+            >
+              {label}
+            </text>
+            <line
+              x1={padX}
+              y1={y}
+              x2={w}
+              y2={y}
+              stroke="var(--border)"
+              strokeWidth="0.5"
+            />
           </g>
         );
       })}
-      <path d={path} fill="none" stroke="var(--midBlue)" strokeWidth="3" opacity="0.12" strokeLinecap="round" />
-      <path d={path} fill="none" stroke="var(--accentBlue)" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d={path}
+        fill="none"
+        stroke="var(--midBlue)"
+        strokeWidth="3"
+        opacity="0.12"
+        strokeLinecap="round"
+      />
+      <path
+        d={path}
+        fill="none"
+        stroke="var(--accentBlue)"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
       {labels.map((label, i) => {
-        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1) return null;
+        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1)
+          return null;
         const x = (i / (labels.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
         return (
-          <text key={i} x={x} y={h - 5} textAnchor="middle" fontSize="10" fill="var(--subtext)">{label}</text>
+          <text
+            key={i}
+            x={x}
+            y={h - 5}
+            textAnchor="middle"
+            fontSize="10"
+            fill="var(--subtext)"
+          >
+            {label}
+          </text>
         );
       })}
     </svg>
@@ -89,8 +138,17 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
 function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
-      <div style={{ width: "100%", height: h, display: "grid", placeContent: "center" }}>
-        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>No data</span>
+      <div
+        style={{
+          width: "100%",
+          height: h,
+          display: "grid",
+          placeContent: "center",
+        }}
+      >
+        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>
+          No data
+        </span>
       </div>
     );
   }
@@ -101,7 +159,9 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   const graphWidth = w - padX;
 
   const min = 0;
-  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(Math.max(...data));
+  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(
+    Math.max(...data)
+  );
 
   const pts = data.map((d, i) => {
     const x = (i / (data.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
@@ -127,18 +187,43 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
         const y = graphHeight - yVal * (graphHeight - 10) - 5;
         return (
           <g key={i}>
-            <text x={padX - 8} y={y + 4} textAnchor="end" fontSize="10" fill="var(--subtext)">{label}</text>
-            <line x1={padX} y1={y} x2={w} y2={y} stroke="var(--border)" strokeWidth="0.5" />
+            <text
+              x={padX - 8}
+              y={y + 4}
+              textAnchor="end"
+              fontSize="10"
+              fill="var(--subtext)"
+            >
+              {label}
+            </text>
+            <line
+              x1={padX}
+              y1={y}
+              x2={w}
+              y2={y}
+              stroke="var(--border)"
+              strokeWidth="0.5"
+            />
           </g>
         );
       })}
       <path d={`${top} ${bottom}`} fill="url(#aGrad)" />
       <path d={top} fill="none" stroke="var(--darkGreen)" strokeWidth="1.25" />
       {labels.map((label, i) => {
-        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1) return null;
+        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1)
+          return null;
         const x = (i / (labels.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
         return (
-          <text key={i} x={x} y={h - 5} textAnchor="middle" fontSize="10" fill="var(--subtext)">{label}</text>
+          <text
+            key={i}
+            x={x}
+            y={h - 5}
+            textAnchor="middle"
+            fontSize="10"
+            fill="var(--subtext)"
+          >
+            {label}
+          </text>
         );
       })}
     </svg>
@@ -149,7 +234,11 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
 const TimeframeButton = ({ label, active, onClick }) => (
   <button
     onClick={() => onClick(label)}
-    className={`px-3 py-1 text-xs rounded-md transition-colors ${active ? "bg-[var(--accent)] text-white font-semibold" : "bg-transparent text-[var(--subtext)] hover:bg-[var(--border)]"}`}
+    className={`px-3 py-1 text-xs rounded-md transition-colors ${
+      active
+        ? "bg-[var(--accent)] text-white font-semibold"
+        : "bg-transparent text-[var(--subtext)] hover:bg-[var(--border)]"
+    }`}
   >
     {label}
   </button>
@@ -161,6 +250,16 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
   const [timeframe, setTimeframe] = useState("Weekly");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // NEW: State for dropdown visibility on mobile
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const timeframes = ["Daily", "Weekly", "Monthly"];
+
+  // NEW: Handler for dropdown selection
+  const handleTimeframeSelect = (selectedTimeframe) => {
+    setTimeframe(selectedTimeframe);
+    setIsDropdownOpen(false); // Close dropdown after selection
+  };
 
   useEffect(() => {
     const BASE = import.meta.env.VITE_API_URL || "";
@@ -214,47 +313,139 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
       style={{
         borderColor: "var(--border)",
         background: "var(--card)",
-        boxShadow: theme === "dark" ? "0 6px 30px rgba(0,0,0,0.4)" : "0 6px 20px rgba(15,23,42,0.04)",
+        boxShadow:
+          theme === "dark"
+            ? "0 6px 30px rgba(0,0,0,0.4)"
+            : "0 6px 20px rgba(15,23,42,0.04)",
       }}
     >
       <div
         className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b"
         style={{ borderColor: "var(--border)" }}
       >
-        <div 
+        <div
           className="flex items-center gap-3 cursor-grab active:cursor-grabbing"
           {...dragListeners}
         >
           <span className="w-10 h-10 rounded-lg" style={sectionAccents.line} />
           <div>
-            <div className="font-bold" style={{ color: "var(--text)" }}>Traffic Trends</div>
-            <div className="text-xs" style={{ color: "var(--subtext)" }}>Reports & misinformation volume</div>
+            <div className="font-bold" style={{ color: "var(--text)" }}>
+              Traffic Trends
+            </div>
+            <div className="text-xs" style={{ color: "var(--subtext)" }}>
+              Reports & misinformation volume
+            </div>
           </div>
         </div>
-        
-        <div
-          className="flex items-center gap-1 p-1 rounded-lg"
-          style={{ background: "rgba(0,0,0,0.1)" }}
-        >
-          <TimeframeButton label="Daily" active={timeframe === "Daily"} onClick={setTimeframe} />
-          <TimeframeButton label="Weekly" active={timeframe === "Weekly"} onClick={setTimeframe} />
-          <TimeframeButton label="Monthly" active={timeframe === "Monthly"} onClick={setTimeframe} />
+
+        {/* --- CHANGED: Responsive timeframe selector --- */}
+        <div>
+          {/* Desktop View: Button Group (Visible on lg screens and up) */}
+          <div
+            className="hidden lg:flex items-center gap-1 p-1 rounded-lg"
+            style={{ background: "rgba(0,0,0,0.1)" }}
+          >
+            {timeframes.map((label) => (
+              <TimeframeButton
+                key={label}
+                label={label}
+                active={timeframe === label}
+                onClick={setTimeframe}
+              />
+            ))}
+          </div>
+
+          {/* Mobile View: Dropdown (Hidden on lg screens and up) */}
+          <div className="relative w-[25vw] lg:hidden">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center justify-between w-full px-3 py-1.5 text-xs text-left bg-zinc-100 dark:bg-teal-600 border border-zinc-200 dark:border-zinc-700 rounded-lg"
+            >
+              <span>{timeframe}</span>
+              <svg
+                className={`w-4 h-4 ml-1 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="black"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="absolute right-0 w-full mt-2 origin-top-right bg-[var(--card)] border border-[var(--border)] rounded-md shadow-lg z-10">
+                <div className="py-1">
+                  {timeframes.map((label) => (
+                    <button
+                      key={label}
+                      onClick={() => handleTimeframeSelect(label)}
+                      className="block w-full px-4 py-2 text-xs text-left text-[var(--text)] hover:bg-[var(--border)]"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+        {/* --- End of changed section --- */}
       </div>
 
-      <div className="p-2 sm:p-4 cursor-grab active:cursor-grabbing" {...dragListeners}>
+      <div
+        className="p-2 sm:p-4 cursor-grab active:cursor-grabbing"
+        {...dragListeners}
+      >
         {loading ? (
-          <div className="text-center py-10" style={{ color: "var(--subtext)" }}>Loading Chart Data...</div>
+          <div
+            className="text-center py-10"
+            style={{ color: "var(--subtext)" }}
+          >
+            Loading Chart Data...
+          </div>
         ) : error ? (
           <div className="text-center py-10 text-red-500">{error}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
-            <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
-              <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Total Reports ({timeframe})</div>
+            <div
+              className="rounded-xl p-2 sm:p-3"
+              style={{
+                background:
+                  theme === "dark"
+                    ? "rgba(255,255,255,0.02)"
+                    : "rgba(15,23,42,0.02)",
+              }}
+            >
+              <div
+                className="text-sm font-semibold mb-2"
+                style={{ color: "var(--text)" }}
+              >
+                Total Reports ({timeframe})
+              </div>
               <LineChart data={chartData.reports} labels={chartData.labels} />
             </div>
-            <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
-              <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Misinformation Reports ({timeframe})</div>
+            <div
+              className="rounded-xl p-2 sm:p-3"
+              style={{
+                background:
+                  theme === "dark"
+                    ? "rgba(255,255,255,0.02)"
+                    : "rgba(15,23,42,0.02)",
+              }}
+            >
+              <div
+                className="text-sm font-semibold mb-2"
+                style={{ color: "var(--text)" }}
+              >
+                Misinformation Reports ({timeframe})
+              </div>
               <AreaChart data={chartData.misinfo} labels={chartData.labels} />
             </div>
           </div>
