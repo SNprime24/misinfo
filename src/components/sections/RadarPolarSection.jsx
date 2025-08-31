@@ -75,7 +75,7 @@ function RadarChart({ axes = [], values = [], size = 220 }) {
 }
 
 // --- Main Exported Component ---
-export default function RadarPolarSection({ theme, sectionAccents }) {
+export default function RadarPolarSection({ theme, sectionAccents, dragListeners}) {
     const [radarData, setRadarData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -116,8 +116,9 @@ export default function RadarPolarSection({ theme, sectionAccents }) {
 
     return (
         <section
-            className="rounded-3xl border"
+            className="rounded-3xl border cursor-grab active:cursor-grabbing"
             style={{ borderColor: "var(--border)", background: "var(--card)" }}
+            {...dragListeners}
         >
             {/* Header */}
             <div

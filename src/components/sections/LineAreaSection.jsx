@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 
-// --- NEW: Helper function to calculate nice intervals for the Y-axis ---
+// --- Helper function to calculate nice intervals for the Y-axis ---
 function generateYTicks(dataMax) {
   if (dataMax <= 1) return { ticks: [0, 1], niceMax: 1 };
 
@@ -36,17 +36,8 @@ const pointsToPath = (pts) =>
 function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: h,
-          display: "grid",
-          placeContent: "center",
-        }}
-      >
-        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>
-          No data
-        </span>
+      <div style={{ width: "100%", height: h, display: "grid", placeContent: "center" }}>
+        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>No data</span>
       </div>
     );
   }
@@ -57,9 +48,7 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   const graphWidth = w - padX;
 
   const min = 0;
-  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(
-    Math.max(...data)
-  );
+  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(Math.max(...data));
 
   const pts = data.map((d, i) => {
     const x = (i / (data.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
@@ -78,56 +67,18 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
         const y = graphHeight - yVal * (graphHeight - 10) - 5;
         return (
           <g key={i}>
-            <text
-              x={padX - 8}
-              y={y + 4}
-              textAnchor="end"
-              fontSize="10"
-              fill="var(--subtext)"
-            >
-              {label}
-            </text>
-            <line
-              x1={padX}
-              y1={y}
-              x2={w}
-              y2={y}
-              stroke="var(--border)"
-              strokeWidth="0.5"
-            />
+            <text x={padX - 8} y={y + 4} textAnchor="end" fontSize="10" fill="var(--subtext)">{label}</text>
+            <line x1={padX} y1={y} x2={w} y2={y} stroke="var(--border)" strokeWidth="0.5" />
           </g>
         );
       })}
-      <path
-        d={path}
-        fill="none"
-        stroke="var(--midBlue)"
-        strokeWidth="3"
-        opacity="0.12"
-        strokeLinecap="round"
-      />
-      <path
-        d={path}
-        fill="none"
-        stroke="var(--accentBlue)"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+      <path d={path} fill="none" stroke="var(--midBlue)" strokeWidth="3" opacity="0.12" strokeLinecap="round" />
+      <path d={path} fill="none" stroke="var(--accentBlue)" strokeWidth="2" strokeLinecap="round" />
       {labels.map((label, i) => {
-        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1)
-          return null;
+        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1) return null;
         const x = (i / (labels.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
         return (
-          <text
-            key={i}
-            x={x}
-            y={h - 5}
-            textAnchor="middle"
-            fontSize="10"
-            fill="var(--subtext)"
-          >
-            {label}
-          </text>
+          <text key={i} x={x} y={h - 5} textAnchor="middle" fontSize="10" fill="var(--subtext)">{label}</text>
         );
       })}
     </svg>
@@ -138,17 +89,8 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
 function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: h,
-          display: "grid",
-          placeContent: "center",
-        }}
-      >
-        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>
-          No data
-        </span>
+      <div style={{ width: "100%", height: h, display: "grid", placeContent: "center" }}>
+        <span style={{ color: "var(--subtext)", fontSize: "12px" }}>No data</span>
       </div>
     );
   }
@@ -159,9 +101,7 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   const graphWidth = w - padX;
 
   const min = 0;
-  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(
-    Math.max(...data)
-  );
+  const { ticks: yAxisLabels, niceMax: max } = generateYTicks(Math.max(...data));
 
   const pts = data.map((d, i) => {
     const x = (i / (data.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
@@ -187,43 +127,18 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
         const y = graphHeight - yVal * (graphHeight - 10) - 5;
         return (
           <g key={i}>
-            <text
-              x={padX - 8}
-              y={y + 4}
-              textAnchor="end"
-              fontSize="10"
-              fill="var(--subtext)"
-            >
-              {label}
-            </text>
-            <line
-              x1={padX}
-              y1={y}
-              x2={w}
-              y2={y}
-              stroke="var(--border)"
-              strokeWidth="0.5"
-            />
+            <text x={padX - 8} y={y + 4} textAnchor="end" fontSize="10" fill="var(--subtext)">{label}</text>
+            <line x1={padX} y1={y} x2={w} y2={y} stroke="var(--border)" strokeWidth="0.5" />
           </g>
         );
       })}
       <path d={`${top} ${bottom}`} fill="url(#aGrad)" />
       <path d={top} fill="none" stroke="var(--darkGreen)" strokeWidth="1.25" />
       {labels.map((label, i) => {
-        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1)
-          return null;
+        if (i > 0 && i % labelInterval !== 0 && i !== labels.length - 1) return null;
         const x = (i / (labels.length - 1 || 1)) * (graphWidth - 10) + padX + 5;
         return (
-          <text
-            key={i}
-            x={x}
-            y={h - 5}
-            textAnchor="middle"
-            fontSize="10"
-            fill="var(--subtext)"
-          >
-            {label}
-          </text>
+          <text key={i} x={x} y={h - 5} textAnchor="middle" fontSize="10" fill="var(--subtext)">{label}</text>
         );
       })}
     </svg>
@@ -234,18 +149,14 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
 const TimeframeButton = ({ label, active, onClick }) => (
   <button
     onClick={() => onClick(label)}
-    className={`px-3 py-1 text-xs rounded-md transition-colors ${
-      active
-        ? "bg-[var(--accent)] text-white font-semibold"
-        : "bg-transparent text-[var(--subtext)] hover:bg-[var(--border)]"
-    }`}
+    className={`px-3 py-1 text-xs rounded-md transition-colors ${active ? "bg-[var(--accent)] text-white font-semibold" : "bg-transparent text-[var(--subtext)] hover:bg-[var(--border)]"}`}
   >
     {label}
   </button>
 );
 
 // --- Main Exported Component ---
-export default function LineAreaSection({ theme, sectionAccents }) {
+function LineAreaSection({ theme, sectionAccents, dragListeners }) {
   const [trafficData, setTrafficData] = useState(null);
   const [timeframe, setTimeframe] = useState("Weekly");
   const [loading, setLoading] = useState(true);
@@ -303,93 +214,47 @@ export default function LineAreaSection({ theme, sectionAccents }) {
       style={{
         borderColor: "var(--border)",
         background: "var(--card)",
-        boxShadow:
-          theme === "dark"
-            ? "0 6px 30px rgba(0,0,0,0.4)"
-            : "0 6px 20px rgba(15,23,42,0.04)",
+        boxShadow: theme === "dark" ? "0 6px 30px rgba(0,0,0,0.4)" : "0 6px 20px rgba(15,23,42,0.04)",
       }}
     >
       <div
         className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b"
         style={{ borderColor: "var(--border)" }}
       >
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-grab active:cursor-grabbing"
+          {...dragListeners}
+        >
           <span className="w-10 h-10 rounded-lg" style={sectionAccents.line} />
           <div>
-            <div className="font-bold" style={{ color: "var(--text)" }}>
-              Traffic Trends
-            </div>
-            <div className="text-xs" style={{ color: "var(--subtext)" }}>
-              Reports & misinformation volume
-            </div>
+            <div className="font-bold" style={{ color: "var(--text)" }}>Traffic Trends</div>
+            <div className="text-xs" style={{ color: "var(--subtext)" }}>Reports & misinformation volume</div>
           </div>
         </div>
+        
         <div
           className="flex items-center gap-1 p-1 rounded-lg"
           style={{ background: "rgba(0,0,0,0.1)" }}
         >
-          <TimeframeButton
-            label="Daily"
-            active={timeframe === "Daily"}
-            onClick={setTimeframe}
-          />
-          <TimeframeButton
-            label="Weekly"
-            active={timeframe === "Weekly"}
-            onClick={setTimeframe}
-          />
-          <TimeframeButton
-            label="Monthly"
-            active={timeframe === "Monthly"}
-            onClick={setTimeframe}
-          />
+          <TimeframeButton label="Daily" active={timeframe === "Daily"} onClick={setTimeframe} />
+          <TimeframeButton label="Weekly" active={timeframe === "Weekly"} onClick={setTimeframe} />
+          <TimeframeButton label="Monthly" active={timeframe === "Monthly"} onClick={setTimeframe} />
         </div>
       </div>
 
-      <div className="p-2 sm:p-4">
+      <div className="p-2 sm:p-4 cursor-grab active:cursor-grabbing" {...dragListeners}>
         {loading ? (
-          <div
-            className="text-center py-10"
-            style={{ color: "var(--subtext)" }}
-          >
-            Loading Chart Data...
-          </div>
+          <div className="text-center py-10" style={{ color: "var(--subtext)" }}>Loading Chart Data...</div>
         ) : error ? (
           <div className="text-center py-10 text-red-500">{error}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-4">
-            <div
-              className="rounded-xl p-2 sm:p-3"
-              style={{
-                background:
-                  theme === "dark"
-                    ? "rgba(255,255,255,0.02)"
-                    : "rgba(15,23,42,0.02)",
-              }}
-            >
-              <div
-                className="text-sm font-semibold mb-2"
-                style={{ color: "var(--text)" }}
-              >
-                Total Reports ({timeframe})
-              </div>
+            <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
+              <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Total Reports ({timeframe})</div>
               <LineChart data={chartData.reports} labels={chartData.labels} />
             </div>
-            <div
-              className="rounded-xl p-2 sm:p-3"
-              style={{
-                background:
-                  theme === "dark"
-                    ? "rgba(255,255,255,0.02)"
-                    : "rgba(15,23,42,0.02)",
-              }}
-            >
-              <div
-                className="text-sm font-semibold mb-2"
-                style={{ color: "var(--text)" }}
-              >
-                Misinformation Reports ({timeframe})
-              </div>
+            <div className="rounded-xl p-2 sm:p-3" style={{ background: theme === "dark" ? "rgba(255,255,255,0.02)" : "rgba(15,23,42,0.02)" }}>
+              <div className="text-sm font-semibold mb-2" style={{ color: "var(--text)" }}>Misinformation Reports ({timeframe})</div>
               <AreaChart data={chartData.misinfo} labels={chartData.labels} />
             </div>
           </div>
@@ -398,3 +263,5 @@ export default function LineAreaSection({ theme, sectionAccents }) {
     </section>
   );
 }
+
+export default React.memo(LineAreaSection);
