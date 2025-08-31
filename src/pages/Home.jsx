@@ -98,7 +98,9 @@ export default function Home({ theme, setTheme }) {
 
   const resultsRef = useRef(null);
 
-  const BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+  const BASE =
+    import.meta.env.VITE_API_URL ||
+    "https://misinformation-combater-backend-386097269689.europe-west1.run.app";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
   const handleAnalyze = async (file, textInput) => {
