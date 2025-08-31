@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { clamp } from "../charts/chartUtils";
 import axios from "axios";
+import { IoNewspaperOutline } from "react-icons/io5";
 
 // A reusable skeleton item component for the loading state.
 const SkeletonItem = () => (
@@ -14,7 +15,7 @@ const SkeletonItem = () => (
 );
 
 
-function SourcesCredibility({ palette, dragListeners }) {
+function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
     const [sources, setSources] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -31,7 +32,7 @@ function SourcesCredibility({ palette, dragListeners }) {
             fetched.sort((a, b) => b.percentage - a.percentage);
             setSources(fetched);
         } catch (err) {
-            setError("Failed to fetch sources. Please try again."); // More user-friendly error message
+            setError("Failed to fetch sources. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -42,7 +43,6 @@ function SourcesCredibility({ palette, dragListeners }) {
     }, [fetchData]);
 
     const topSources = sources.slice(0, 5);
-    const remainingCount = sources.length - topSources.length;
 
     const renderContent = () => {
         if (loading) {
@@ -101,35 +101,55 @@ function SourcesCredibility({ palette, dragListeners }) {
                         </div>
                     );
                 })}
-                {remainingCount > 0 && (
-                    <div className="text-xs text-right" style={{ color: "var(--subtext)" }}>
-                        +{remainingCount} more
-                    </div>
-                )}
             </>
         );
     };
 
     return (
         <section
-            className="rounded-3xl border p-3 sm:p-4 cursor-grab active:cursor-grabbing"
+            className="rounded-3xl border pb-3 sm:pb-4 cursor-grab active:cursor-grabbing"
             style={{ borderColor: "var(--border)", background: "var(--card)" }}
             {...dragListeners}
         >
-            <div className="flex items-center justify-between mb-3">
-                <div className="font-bold" style={{ color: "var(--text)" }}>
-                    Credible Sources
+            {/* Header */}
+            <div
+                className="flex items-center justify-between py-2 sm:py-3 border-b mb-3 w-full"
+                style={{ borderColor: "var(--border)" }}
+            >
+                <div className="flex items-center gap-3 px-3 sm:px-4">
+                    <span
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={sectionAccents.bar}
+                    >
+                        {/* 2. Replace the SVG with the imported icon component */}
+                        <IoNewspaperOutline
+                            className="h-5 w-5"
+                            style={{ color: "var(--primary-foreground)" }}
+                        />
+                    </span>
+                    <div>
+                        <div className="font-bold" style={{ color: "var(--text)" }}>
+                            Metric Averages
+                        </div>
+                        <div className="text-xs" style={{ color: "var(--subtext)" }}>
+                            Recent report analysis
+                        </div>
+                    </div>
                 </div>
+
                 {!loading && !error && (
-                    <div className="text-xs" style={{ color: "var(--subtext)" }}>
+                    <div className="text-xs px-3 sm:px-4 " style={{ color: "var(--subtext)" }}>
                         {sources.length} sources
                     </div>
                 )}
             </div>
-            <div className="space-y-3">
+
+            {/* Content */}
+            <div className="space-y-3 px-3 sm:px-4">
                 {renderContent()}
             </div>
         </section>
+
     );
 }
 

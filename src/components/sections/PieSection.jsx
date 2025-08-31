@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
+import { IoPieChartOutline } from "react-icons/io5"; // 1. Import the icon
 
 // A color mapping for different misinformation categories.
 const categoryColors = {
@@ -113,7 +114,6 @@ export default function PieSection({ theme, sectionAccents, dragListeners }) {
     const BASE = import.meta.env.VITE_API_URL || "";
     const API_URL = `${BASE}/api/v1/dashboard/categories`;
 
-    // Wrapped fetch logic in useCallback for stability and reuse (e.g., for a retry button).
     const fetchData = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -169,8 +169,8 @@ export default function PieSection({ theme, sectionAccents, dragListeners }) {
         if (chartKeys.length === 0) {
             return (
                  <div className="p-4 text-center text-sm" style={{ color: "var(--subtext)" }}>
-                    No category data available.
-                </div>
+                     No category data available.
+                 </div>
             )
         }
 
@@ -217,7 +217,16 @@ export default function PieSection({ theme, sectionAccents, dragListeners }) {
         >
             <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b" style={{ borderColor: "var(--border)" }}>
                 <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-lg" style={sectionAccents.pie} />
+                    {/* 2. Icon added to the span */}
+                    <span
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={sectionAccents.pie}
+                    >
+                        <IoPieChartOutline
+                            className="h-5 w-5"
+                            style={{ color: "var(--primary-foreground)" }}
+                        />
+                    </span>
                     <div>
                         <div className="font-bold" style={{ color: "var(--text)" }}>Category Breakdown</div>
                         <div className="text-xs" style={{ color: "var(--subtext)" }}>Distribution from recent reports</div>
