@@ -5,7 +5,9 @@ import { X } from "lucide-react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ResultSection from "../components/ResultSection";
+import { toPercent } from "../utils/helpers";
 
+// --- Color Palettes ---
 const darkColors = {
   bg: "rgb(10,12,20)",
   card: "rgba(255,255,255,0.03)",
@@ -28,14 +30,7 @@ const lightColors = {
   darkBlue: "rgb(8,30,110)",
 };
 
-// robust toPercent - accepts 0..1 or 0..100
-export function toPercent(x) {
-  if (typeof x !== "number" || isNaN(x)) return 0;
-  if (Math.abs(x) <= 1) return Math.max(0, Math.min(100, Math.round(x * 100)));
-  return Math.max(0, Math.min(100, Math.round(x)));
-}
-
-// ---- MODAL ----
+// --- Modal Component ---
 function Modal({ open, title, onClose, children }) {
   if (!open) return null;
   return (
@@ -78,19 +73,19 @@ function Modal({ open, title, onClose, children }) {
 }
 
 // ---- HOME PAGE ----
-export default function Home({theme, setTheme}) {
+export default function Home({ theme, setTheme }) {
   const palette = theme === "dark" ? darkColors : lightColors;
 
   const cssVars = useMemo(
     () => ({
-      ["--bg"]: palette.bg,
-      ["--card"]: palette.card,
-      ["--text"]: palette.text,
-      ["--subtext"]: palette.subtext,
-      ["--border"]: palette.border,
-      ["--accent"]: palette.accent,
-      ["--midBlue"]: palette.midBlue,
-      ["--darkBlue"]: palette.darkBlue,
+      "--bg": palette.bg,
+      "--card": palette.card,
+      "--text": palette.text,
+      "--subtext": palette.subtext,
+      "--border": palette.border,
+      "--accent": palette.accent,
+      "--midBlue": palette.midBlue,
+      "--darkBlue": palette.darkBlue,
     }),
     [palette]
   );
@@ -101,109 +96,75 @@ export default function Home({theme, setTheme}) {
   const [rawOpen, setRawOpen] = useState(false);
   const [result, setResult] = useState(null);
 
-  // 🔑 ref for results section
   const resultsRef = useRef(null);
 
-  const BASE = import.meta.env.VITE_API_URL || "";
+  const BASE = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
   const API_URL = `${BASE}/api/v1/analysis/analyze`;
 
+  const handleAnalyze = async (file, textInput) => {
+    if (!textInput.trim() && !file) return;
 
-  // console.log("Location data:", formData);
-  // navigator.geolocation.getCurrentPosition((position)=>console.log(position));
-
-  const dummy = {
-    credibility_score: 15,
-    category: "Health Misinformation",
-    key_entities: ["Cinnamon", "Aging"],
-    report_summary:
-      "The claim that eating cinnamon can reverse aging is not supported by scientific evidence and promotes a false health remedy.",
-    analysis:
-      "This claim is not supported by credible scientific or medical sources. A review of information from trusted health organizations indicates that while cinnamon may have some health benefits, it is not a cure for aging, and excessive consumption can be harmful. This content poses a risk by promoting unverified health advice.",
-    metrics: {
-      clarity: 0.8,
-      tone: 0.25,
-      correctness: 0.05,
-      originality: 0.4,
-    },
-    sources: [
-      {
-        name: "Reuters | Fact Check",
-        url: "https://www.reuters.com/article/factcheck-cinnamon-health/fact-check-cinnamon-is-not-a-miracle-cure-idUSL1N2R21B5",
-        credibility_score: 95,
-      },
-      {
-        name: "AP News | Fact Check",
-        url: "https://apnews.com/article/fact-checking-123456789",
-        credibility_score: 92,
-      },
-    ],
-    formal_report:
-      "To Whom It May Concern,\n\nI am reporting a piece of online content for promoting potential misinformation.\n\nCategory of Misinformation: Health Misinformation\n\nOriginal Content Summary: The content claims that eating a spoonful of cinnamon can reverse the aging process.\n\nAnalysis: This claim is not supported by credible scientific or medical sources. A review of information from trusted health organizations indicates that while cinnamon may have some health benefits, it is not a cure for aging, and excessive consumption can be harmful. This content poses a risk by promoting unverified health advice.\n\nI request that you review this content for potential violation of your platform's policies regarding health misinformation.\n\nThank you.",
-    raw: {
-      ts: 1724578800000,
-    },
-  };
-
-  const handleAnalyze = async () => {
     setError(null);
     setLoading(true);
     setResult(null);
 
-    // Wrap geolocation in a Promise to await it
     const getLocation = () =>
-      new Promise((resolve, reject) => {
+      new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
           (position) =>
             resolve({
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             }),
-          (err) => reject(err)
+          (err) => {
+            console.warn("Could not get location, continuing without it.", err);
+            resolve(null);
+          }
         );
       });
 
     try {
       const location = await getLocation();
-      console.log(location);
+      const formData = new FormData();
 
-      const res = await axios.post(
-        API_URL,
-        {
-          content: input,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-        { headers: { "Content-Type": "application/json" } }
-      );
+      if (file) {
+        formData.append("file", file);
+      } else {
+        formData.append("content", textInput);
+      }
 
+      if (location) {
+        formData.append("latitude", location.latitude);
+        formData.append("longitude", location.longitude);
+      }
+
+      const res = await axios.post(API_URL, formData);
       setResult(res.data);
     } catch (e) {
-      console.warn("API error, showing demo payload", e?.message);
-      setError("Could not reach the analysis service. Showing a demo result.");
-      setResult(dummy);
+      console.error("API error:", e);
+      setError(
+        "An error occurred with the analysis service. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔑 scroll into view when result is updated
   useEffect(() => {
     if (result && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [result]);
 
-  const score = toPercent(result?.credibility_score ?? result?.score ?? null);
+  const score = toPercent(result?.credibility_score ?? null);
 
   return (
     <div
       className="min-h-screen w-full"
       style={{ ...cssVars, background: "var(--bg)" }}
     >
-      {/* HEADER */}
       <Header theme={theme} setTheme={setTheme} />
 
-      {/* HERO SECTION */}
       <HeroSection
         theme={theme}
         input={input}
@@ -211,14 +172,19 @@ export default function Home({theme, setTheme}) {
         handleAnalyze={handleAnalyze}
         loading={loading}
         error={error}
+        setError={setError}
       />
 
-      {/* RESULTS SECTION */}
       <div ref={resultsRef}>
-        <ResultSection score={score} result={result} setRawOpen={setRawOpen} />
+        {result && (
+          <ResultSection
+            score={score}
+            result={result}
+            setRawOpen={setRawOpen}
+          />
+        )}
       </div>
 
-      {/* FOOTER */}
       <footer className="py-10">
         <div
           className="max-w-6xl mx-auto px-4 text-sm text-center"
@@ -228,7 +194,6 @@ export default function Home({theme, setTheme}) {
         </div>
       </footer>
 
-      {/* RAW JSON MODAL */}
       <Modal
         open={rawOpen}
         title="Raw Response"
