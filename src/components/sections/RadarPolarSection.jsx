@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import { TbRadar2 } from "react-icons/tb"; // 1. Import the icon
 
 // --- Local Helper Functions for SVG rendering ---
 const polarToCartesian = (cx, cy, r, angleDeg) => {
@@ -126,7 +127,16 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
                 style={{ borderColor: "var(--border)" }}
             >
                 <div className="flex items-center gap-3">
-                    <span className="w-10 h-10 rounded-lg" style={sectionAccents.radar} />
+                    {/* 2. Add the icon to the span */}
+                    <span
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={sectionAccents.radar}
+                    >
+                        <TbRadar2
+                            className="h-7 w-7"
+                            style={{ color: "var(--primary-foreground)" }}
+                        />
+                    </span>
                     <div>
                         <div className="font-bold" style={{ color: "var(--text)" }}>
                             Metric Averages

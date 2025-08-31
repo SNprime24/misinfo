@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
-import { IoPieChartOutline } from "react-icons/io5"; // 1. Import the icon
+import { HiOutlineChartPie } from "react-icons/hi"; // 1. Import the icon
 
 // A color mapping for different misinformation categories.
 const categoryColors = {
@@ -18,7 +18,6 @@ const categoryColors = {
 };
 
 // --- Helper Functions for SVG rendering (unchanged) ---
-
 const polarToCartesian = (cx, cy, r, angleDeg) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180.0;
     return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
@@ -33,7 +32,6 @@ const pieSlicePath = (cx, cy, r, startAngle, endAngle) => {
 
 
 // --- Reusable PieChart Component (unchanged) ---
-
 function PieChart({
     values = [],
     colors = [],
@@ -86,9 +84,7 @@ function PieChart({
 // --- Skeleton Component for Loading State ---
 const PieSectionSkeleton = () => (
     <div className="p-2 sm:p-4 flex flex-col items-center gap-4 md:flex-row md:items-start md:gap-4 animate-pulse">
-        {/* Pie chart placeholder */}
         <div className="flex-shrink-0 w-[120px] h-[120px] rounded-full" style={{ background: 'var(--border)' }} />
-        {/* Legend placeholder */}
         <div className="w-full flex-1 space-y-3 pt-1">
             {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
@@ -104,8 +100,7 @@ const PieSectionSkeleton = () => (
 );
 
 
-// --- Main Section Component (Improved) ---
-
+// --- Main Section Component ---
 export default function PieSection({ theme, sectionAccents, dragListeners }) {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -144,8 +139,6 @@ export default function PieSection({ theme, sectionAccents, dragListeners }) {
         return { chartKeys: keys, chartValues: values, donutLabel: label, categoryTotal: total };
     }, [data]);
 
-
-    // Helper function to render the body content based on the current state.
     const renderBody = () => {
         if (loading) {
             return <PieSectionSkeleton />;
@@ -217,13 +210,13 @@ export default function PieSection({ theme, sectionAccents, dragListeners }) {
         >
             <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b" style={{ borderColor: "var(--border)" }}>
                 <div className="flex items-center gap-3">
-                    {/* 2. Icon added to the span */}
+                    {/* 2. Icon placed in the span */}
                     <span
                         className="w-10 h-10 rounded-lg flex items-center justify-center"
                         style={sectionAccents.pie}
                     >
-                        <IoPieChartOutline
-                            className="h-5 w-5"
+                        <HiOutlineChartPie
+                            className="h-7 w-7"
                             style={{ color: "var(--primary-foreground)" }}
                         />
                     </span>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import { IoAnalyticsOutline } from "react-icons/io5"; // 1. Import the icon
 
 // --- Helper function to calculate nice intervals for the Y-axis ---
 function generateYTicks(dataMax) {
@@ -251,14 +252,12 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // NEW: State for dropdown visibility on mobile
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const timeframes = ["Daily", "Weekly", "Monthly"];
 
-  // NEW: Handler for dropdown selection
   const handleTimeframeSelect = (selectedTimeframe) => {
     setTimeframe(selectedTimeframe);
-    setIsDropdownOpen(false); // Close dropdown after selection
+    setIsDropdownOpen(false);
   };
 
   useEffect(() => {
@@ -327,7 +326,16 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
           className="flex items-center gap-3 cursor-grab active:cursor-grabbing"
           {...dragListeners}
         >
-          <span className="w-10 h-10 rounded-lg" style={sectionAccents.line} />
+          {/* 2. Add the icon inside the span */}
+          <span
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={sectionAccents.line}
+          >
+            <IoAnalyticsOutline
+              className="h-7 w-7"
+              style={{ color: "var(--primary-foreground)" }}
+            />
+          </span>
           <div>
             <div className="font-bold" style={{ color: "var(--text)" }}>
               Traffic Trends
@@ -338,9 +346,7 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
           </div>
         </div>
 
-        {/* --- CHANGED: Responsive timeframe selector --- */}
         <div>
-          {/* Desktop View: Button Group (Visible on lg screens and up) */}
           <div
             className="hidden lg:flex items-center gap-1 p-1 rounded-lg"
             style={{ background: "rgba(0,0,0,0.1)" }}
@@ -355,7 +361,6 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
             ))}
           </div>
 
-          {/* Mobile View: Dropdown (Hidden on lg screens and up) */}
           <div className="relative w-[25vw] lg:hidden">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -396,7 +401,6 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
             )}
           </div>
         </div>
-        {/* --- End of changed section --- */}
       </div>
 
       <div

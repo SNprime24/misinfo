@@ -123,7 +123,7 @@ function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
                     >
                         {/* 2. Replace the SVG with the imported icon component */}
                         <IoNewspaperOutline
-                            className="h-5 w-5"
+                            className="h-7 w-7"
                             style={{ color: "var(--primary-foreground)" }}
                         />
                     </span>

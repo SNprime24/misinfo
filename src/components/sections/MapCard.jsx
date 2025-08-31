@@ -1,5 +1,6 @@
 import React from "react";
 import Graph from "../Graph2"; // adjust path if Graph is in components root
+import { IoGlobeOutline } from "react-icons/io5"; // 1. Import the icon
 
 // Accept the new 'isDragging' prop. It defaults to false.
 export default function MapCard({ theme, sectionAccents, dragListeners, isDragging = false }) {
@@ -16,7 +17,16 @@ export default function MapCard({ theme, sectionAccents, dragListeners, isDraggi
                 style={{ borderColor: "var(--border)" }}
                 {...dragListeners}
             >
-                <span className="w-10 h-10 rounded-lg" style={sectionAccents.map} />
+                {/* 2. Add the icon to the span */}
+                <span
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={sectionAccents.map}
+                >
+                    <IoGlobeOutline
+                        className="h-7 w-7"
+                        style={{ color: "var(--primary-foreground)" }}
+                    />
+                </span>
                 <div>
                     <div className="font-bold" style={{ color: "var(--text)" }}>Geographic View</div>
                     <div className="text-xs" style={{ color: "var(--subtext)" }}>Interactive map of reported items</div>
