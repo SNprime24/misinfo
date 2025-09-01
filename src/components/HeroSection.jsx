@@ -8,6 +8,7 @@ import {
   FileText,
   Film,
 } from "lucide-react";
+import MicrophoneButton from "./MicrophoneButton";
 
 const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
 
@@ -15,11 +16,12 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
   const [input, setInput] = useState("");
   const [file, setFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    if (file) {
+    if (file && file.type.startsWith("image")) {
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       return () => URL.revokeObjectURL(url);
@@ -66,7 +68,7 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
   };
 
   const removeFile = (e) => {
-    e.stopPropagation(); // Prevent drop zone click
+    e.stopPropagation();
     setFile(null);
     if (setError) setError(null);
   };
@@ -76,7 +78,13 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !loading && (input.trim() || file)) {
+    if (
+      e.key === "Enter" &&
+      !e.shiftKey &&
+      !loading &&
+      (input.trim() || file)
+    ) {
+      e.preventDefault();
       onAnalyzeClick();
     }
   };
@@ -117,63 +125,80 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="w-full max-w-3xl rounded-3xl shadow-2xl border p-4 md:p-6 backdrop-blur-md"
-          style={{
-            background: "var(--card)",
-            borderColor: "var(--border)",
-          }}
+          style={{ background: "var(--card)", borderColor: "var(--border)" }}
         >
-          {/* Unified Input and Drop Zone */}
           <div
-            className={`transition-colors duration-300 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 text-center cursor-pointer
-              ${isDragging ? "border-blue-500 bg-blue-500/10" : ""}
-            `}
+            className={`transition-colors duration-300 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-6 text-center ${
+              isDragging ? "border-blue-500 bg-blue-500/10" : ""
+            }`}
             style={{ borderColor: "var(--border)" }}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onClick={() => !file && fileInputRef.current.click()}
           >
             {!file ? (
-              // Empty State
               <>
-                <UploadCloud
-                  className="w-8 h-8 mb-3"
-                  style={{ color: "var(--subtext)" }}
-                />
-                <p className="font-semibold" style={{ color: "var(--text)" }}>
-                  Click to browse or drag & drop
-                </p>
-                <p className="text-sm" style={{ color: "var(--subtext)" }}>
-                  Image, Audio, PDF, or DOCX (Max 15MB)
-                </p>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
+                >
+                  <UploadCloud
+                    className="w-8 h-8 mb-3 mx-auto"
+                    style={{ color: "var(--subtext)" }}
+                  />
+                  <p className="font-semibold" style={{ color: "var(--text)" }}>
+                    Click to browse or drag & drop
+                  </p>
+                  <p className="text-sm" style={{ color: "var(--subtext)" }}>
+                    Image, Audio, PDF, or DOCX (Max 15MB)
+                  </p>
+                </div>
+
                 <div
                   className="w-full mt-4 text-sm"
                   style={{ color: "var(--subtext)" }}
                 >
                   OR
                 </div>
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Paste text or a URL to analyze..."
-                  rows={2}
-                  className="w-full text-center px-4 py-3 rounded-2xl border outline-none focus:ring-2 mt-4 resize-none"
-                  style={{
-                    background:
-                      theme === "dark"
-                        ? "rgba(255,255,255,0.05)"
-                        : "rgba(0,0,0,0.02)",
-                    color: "var(--text)",
-                    borderColor: "var(--border)",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
+
+                <div className="relative w-full flex items-center mt-4">
+                  <textarea
+                    value={input}
+                    onChange={(e) => {
+                      setInput(e.target.value);
+                      if (file) setFile(null);
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder={
+                      isListening
+                        ? "Listening..."
+                        : "Paste text, URL, or use mic..."
+                    }
+                    rows={2}
+                    className="w-full text-center px-4 py-3 pr-12 rounded-2xl border outline-none focus:ring-2 resize-none"
+                    style={{
+                      background:
+                        theme === "dark"
+                          ? "rgba(255,255,255,0.05)"
+                          : "rgba(0,0,0,0.02)",
+                      color: "var(--text)",
+                      borderColor: "var(--border)",
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <MicrophoneButton
+                      onTranscript={(transcript) =>
+                        setInput(input + transcript)
+                      }
+                      onListenStateChange={setIsListening}
+                    />
+                  </div>
+                </div>
               </>
             ) : (
-              // File Selected State
               <div className="w-full flex flex-col items-center justify-center">
-                {previewUrl && file.type.startsWith("image") ? (
+                {previewUrl ? (
                   <img
                     src={previewUrl}
                     alt="preview"
@@ -188,7 +213,7 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
                   </div>
                 )}
                 <p
-                  className="font-semibold truncate"
+                  className="font-semibold truncate max-w-full px-4"
                   style={{ color: "var(--text)" }}
                 >
                   {file.name}
@@ -213,7 +238,6 @@ const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
             />
           </div>
 
-          {/* Analyze Button */}
           <div className="flex justify-center mt-4">
             <button
               onClick={onAnalyzeClick}
