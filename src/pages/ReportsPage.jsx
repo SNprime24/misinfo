@@ -108,7 +108,7 @@ const ReportsPage = ({ theme, setTheme }) => {
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters, setFilters] = useState({ state: "All", duration: "week" });
+  const [filters, setFilters] = useState({ state: "All", duration: "all" });
 
   const palette = theme === "dark" ? darkColors : lightColors;
   const cssVars = useMemo(
