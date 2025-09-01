@@ -271,7 +271,7 @@ const Graph = ({ theme = "dark" }) => {
       whenCreated={setMapCreated}
     >
       <TileLayer {...currentTileLayer} />
-
+      
       <GeoJSON
         ref={geojsonRef}
         data={indiaData}

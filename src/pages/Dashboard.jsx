@@ -120,14 +120,16 @@ export default function Dashboard({ theme, setTheme }) {
       ),
     [palette]
   );
-const sectionAccents = {
-  line:    { background: "linear-gradient(to right, #00C853, #69F0AE)" }, 
-  pie:     { background: "linear-gradient(to bottom , #00C853, #69F0AE)" },
-  bar:     { background: "linear-gradient(to top left, #00C853, #69F0AE)" },
-  radar:   { background: "linear-gradient(to top right, #00C853, #69F0AE)" },
-  scatter: { background: "linear-gradient(to bottom left, #00C853, #69F0AE)" },
-  map:     { background: "linear-gradient(to bottom right, #00C853, #69F0AE)" },
-};
+  const sectionAccents = {
+    line: { background: "linear-gradient(to right, #00C853, #69F0AE)" },
+    pie: { background: "linear-gradient(to bottom , #00C853, #69F0AE)" },
+    bar: { background: "linear-gradient(to top left, #00C853, #69F0AE)" },
+    radar: { background: "linear-gradient(to top right, #00C853, #69F0AE)" },
+    scatter: {
+      background: "linear-gradient(to bottom left, #00C853, #69F0AE)",
+    },
+    map: { background: "linear-gradient(to bottom right, #00C853, #69F0AE)" },
+  };
 
   const weeklyTraffic = useMemo(() => [120, 160, 110, 190, 230, 210, 260], []);
   const monthlyTrend = useMemo(
