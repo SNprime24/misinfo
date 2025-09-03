@@ -19,17 +19,6 @@ const darkColors = {
   darkBlue: "rgb(10,40,120)",
 };
 
-const lightColors = {
-  bg: "rgb(248,250,252)",
-  card: "rgba(255,255,255,0.9)",
-  text: "rgb(15,23,42)",
-  subtext: "rgba(15,23,42,0.66)",
-  border: "rgba(15,23,42,0.06)",
-  accent: "rgb(0,110,255)",
-  midBlue: "rgb(20,90,200)",
-  darkBlue: "rgb(8,30,110)",
-};
-
 // --- Modal Component ---
 function Modal({ open, title, onClose, children }) {
   if (!open) return null;
@@ -74,7 +63,8 @@ function Modal({ open, title, onClose, children }) {
 
 // ---- HOME PAGE ----
 export default function Home({ theme, setTheme }) {
-  const palette = theme === "dark" ? darkColors : lightColors;
+  // CORRECTED: Force the palette to always use darkColors
+  const palette = darkColors;
 
   const cssVars = useMemo(
     () => ({
@@ -87,7 +77,7 @@ export default function Home({ theme, setTheme }) {
       "--midBlue": palette.midBlue,
       "--darkBlue": palette.darkBlue,
     }),
-    [palette]
+    [palette] // Dependency is now constant but kept for structure
   );
 
   const [input, setInput] = useState("");
@@ -165,10 +155,11 @@ export default function Home({ theme, setTheme }) {
       className="min-h-screen w-full"
       style={{ ...cssVars, background: "var(--bg)" }}
     >
-      <Header theme={theme} setTheme={setTheme} />
+      {/* HEADER: Force theme prop to "dark" to ensure icon is correct */}
+      <Header theme="dark" setTheme={setTheme} />
 
       <HeroSection
-        theme={theme}
+        theme="dark" // Pass "dark" to ensure HeroSection is also dark
         input={input}
         setInput={setInput}
         handleAnalyze={handleAnalyze}

@@ -1,259 +1,122 @@
-import { useRef, useCallback, useMemo, useState, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Marker,
-  Popup,
-  Polyline,
-} from "react-leaflet";
-import axios from "axios";
+import React, { useRef, useMemo, useEffect } from "react";
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import indiaData from "../assets/india.json";
 
-const stateConnections = [];
-
-// --- Color Palettes ---
+// --- Color Palettes (Centralized here for this component) ---
 const darkColors = {
   bg: "rgb(11, 22, 44)",
   card: "rgb(18, 32, 58)",
-  border: "rgb(30, 48, 80)",
   accentBlue: "rgb(6, 165, 225)",
-  midBlue: "rgb(50, 110, 220)",
   darkBlue: "rgb(10, 40, 120)",
-  accentGreen: "rgb(0, 255, 135)",
-  line: "rgba(0, 255, 135, 0.6)",
 };
 
 const lightColors = {
   bg: "rgb(248, 250, 252)",
   border: "rgba(15, 23, 42, 0.1)",
-  accent: "rgb(0, 110, 255)",
   midBlue: "rgb(200, 220, 255)",
-  line: "rgba(0, 110, 255, 0.7)",
 };
 
-const Graph = ({ theme = "dark" }) => {
+// --- Helper: Create Custom Marker Icon ---
+const createCustomIcon = (color) => {
+  // Fix for default icon path issue with bundlers like Vite/Webpack
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+    iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+  });
+
+  return L.divIcon({
+    html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px ${color};"></div>`,
+    className: "custom-marker-icon",
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+  });
+};
+
+// --- Main Graph Component ---
+const Graph = ({ theme = "dark", heatmapData = [], reportsData = [] }) => {
   const isDark = theme === "dark";
-  const geojsonRef = useRef();
   const mapRef = useRef(null);
   const heatRef = useRef(null);
 
-  const [data, setData] = useState([]); // will hold points array from API
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const BASE = import.meta.env.VITE_API_URL || "";
-  const API_URL = `${BASE}/api/v1/dashboard/heatmap`;
-
-  // --- gradient sampled to mimic the image legend (cold -> hot)
-  // stops go from 0.0 -> 1.0 (leaflet.heat uses 0..1 gradient)
-  const heatGradient = {
-    0.0: "#08306b", // deep cold blue
-    0.12: "#2c7bb6", // lighter blue
-    0.3: "#7fcdbb", // cyan / greenish
-    0.5: "#ffffbf", // yellow
-    0.7: "#fdae61", // orange
-    0.88: "#d7191c", // red
-    1.0: "#800026", // deep red (highest intensity)
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(API_URL);
-        // API returns { points: [...] } — protect against different shapes
-        const points = response?.data?.points ?? response?.data ?? [];
-        setData(points);
-      } catch (err) {
-        setError("Failed to fetch data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [API_URL]);
-
-  // convert API points to marker data and heat points
-  const statesData = useMemo(() => {
-    // If your original markers used one per "state", you can adapt this.
-    // For now we create markers directly from returned points (if you prefer
-    // aggregated state markers, do aggregation separately).
-    return (data || []).map((pt, i) => ({
-      id: `p-${i}`,
-      name: pt.report_summary ?? `Point ${i}`,
-      latitude: pt.latitude,
-      longitude: pt.longitude,
-      intensity: typeof pt.intensity === "number" ? pt.intensity : 0,
-      raw: pt,
-    }));
-  }, [data]);
-
-  // prepare india bounds (unchanged)
-  const indiaBounds = useMemo(() => {
-    if (!indiaData || !indiaData.features || indiaData.features.length === 0) {
-      return L.latLngBounds(L.latLng(6, 68), L.latLng(35, 97));
-    }
-    const geoJsonLayer = L.geoJSON(indiaData);
-    return geoJsonLayer.getBounds().pad(0.1);
-  }, []);
-
-  const setMapCreated = (map) => {
-    mapRef.current = map;
-    if (map && indiaBounds.isValid()) map.fitBounds(indiaBounds);
-  };
-
-  // styles (unchanged)
-  const style = useMemo(
+  const heatGradient = useMemo(
     () => ({
-      dark: {
-        color: darkColors.accentBlue,
-        weight: 1,
-        fillColor: darkColors.darkBlue,
-        fillOpacity: 0.6,
-      },
-      light: {
-        color: lightColors.border,
-        weight: 1.5,
-        fillColor: lightColors.midBlue,
-        fillOpacity: 0.7,
-      },
+      0.0: "#08306b",
+      0.12: "#2c7bb6",
+      0.3: "#7fcdbb",
+      0.5: "#ffffbf",
+      0.7: "#fdae61",
+      0.88: "#d7191c",
+      1.0: "#800026",
     }),
     []
+  );
+
+  const indiaBounds = useMemo(() => {
+    const geoJsonLayer = L.geoJSON(indiaData);
+    return geoJsonLayer.getBounds().pad(1);
+  }, []);
+
+  const geoJsonStyle = useMemo(
+    () =>
+      isDark
+        ? {
+            color: darkColors.accentBlue,
+            weight: 1,
+            fillColor: darkColors.darkBlue,
+            fillOpacity: 0.6,
+          }
+        : {
+            color: lightColors.border,
+            weight: 1.5,
+            fillColor: lightColors.midBlue,
+            fillOpacity: 0.7,
+          },
+    [isDark]
   );
 
   const tileLayer = useMemo(
-    () => ({
-      dark: {
-        url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      },
-      light: {
-        url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      },
-    }),
-    []
+    () =>
+      isDark
+        ? {
+            url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            attribution:
+              '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+          }
+        : {
+            url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+            attribution:
+              '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+          },
+    [isDark]
   );
 
-  const currentTileLayer = isDark ? tileLayer.dark : tileLayer.light;
-
-  // create marker icon (unchanged)
-  const createCustomIcon = (color) => {
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-      iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-      shadowUrl:
-        "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-    });
-
-    return L.divIcon({
-      html: `<div style="background-color: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px ${color};"></div>`,
-      className: "custom-marker-icon",
-      iconSize: [16, 16],
-      iconAnchor: [8, 8],
-    });
-  };
-
-  // --- Heat layer effect: create/replace heat layer whenever data or theme changes
+  // Effect to manage the heatmap layer
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !L.heatLayer) return;
 
-    // prepare heat points: filter out invalid coords like 0,0
-    const heatPoints = (data || [])
-      .filter(
-        (p) =>
-          p &&
-          typeof p.latitude === "number" &&
-          typeof p.longitude === "number" &&
-          !(p.latitude === 0 && p.longitude === 0)
-      )
-      .map((p) => {
-        // clamp intensity to 0..1
-        const intensity = Math.max(0, Math.min(1, Number(p.intensity) || 0));
-        // leaflet.heat expects [lat, lng, intensity]
-        return [p.latitude, p.longitude, intensity];
-      });
+    const heatPoints = (heatmapData || [])
+      .filter((p) => p && typeof p[0] === "number" && typeof p[1] === "number")
+      .map((p) => [p[0], p[1], Math.max(0, Math.min(1, p[2] || 0.5))]);
 
-    // remove existing heat layer if present
     if (heatRef.current) {
-      try {
-        heatRef.current.remove();
-      } catch (err) {
-        /* ignore */
-      }
-      heatRef.current = null;
+      heatRef.current.remove();
     }
 
-    // if no points, nothing to add
-    if (!heatPoints.length) return;
-
-    // Add heat layer with options tuned to your visual reference
-    // radius controls the spread (in pixels), blur smooths it out
-    heatRef.current = L.heatLayer(heatPoints, {
-      radius: 25, // adjust to make patch sizes similar to reference
-      blur: 18,
-      maxZoom: 10,
-      // the gradient uses 0..1 keys as strings in leaflet.heat
-      gradient: heatGradient,
-      // you can also tweak minOpacity or max to emphasize
-      minOpacity: 0.2,
-    }).addTo(mapRef.current);
-
-    // cleanup on unmount
-    return () => {
-      if (heatRef.current) {
-        try {
-          heatRef.current.remove();
-        } catch (err) {}
-        heatRef.current = null;
-      }
-    };
-  }, [data, isDark]); // re-run when data or theme changes
-
-  // you already had connectionLines; adapt it to statesData or keep as before
-  const connectionLines = useMemo(() => {
-    const statesById = statesData.reduce((acc, state) => {
-      acc[state.id] = state;
-      return acc;
-    }, {});
-
-    return stateConnections
-      .map((conn, index) => {
-        const fromState = statesById[conn.from];
-        const toState = statesById[conn.to];
-
-        if (fromState && toState) {
-          return (
-            <Polyline
-              key={`line-${index}`}
-              positions={[
-                [fromState.latitude, fromState.longitude],
-                [toState.latitude, toState.longitude],
-              ]}
-              pathOptions={{
-                color: isDark ? darkColors.line : lightColors.line,
-                weight: 2,
-                dashArray: "5, 10",
-              }}
-            />
-          );
-        }
-        return null;
-      })
-      .filter(Boolean);
-  }, [isDark, statesData]);
-
-  // A small guard while loading or error (optional)
-  if (error) {
-    console.error(error);
-  }
+    if (heatPoints.length > 0) {
+      heatRef.current = L.heatLayer(heatPoints, {
+        radius: 25,
+        blur: 18,
+        maxZoom: 10,
+        gradient: heatGradient,
+        minOpacity: 0.2,
+      }).addTo(mapRef.current);
+    }
+  }, [heatmapData, heatGradient]);
 
   return (
     <MapContainer
@@ -268,43 +131,42 @@ const Graph = ({ theme = "dark" }) => {
       attributionControl={false}
       maxBounds={indiaBounds}
       minZoom={2}
-      whenCreated={setMapCreated}
+      whenCreated={(map) => {
+        mapRef.current = map;
+        map.fitBounds(indiaBounds);
+      }}
     >
-      <TileLayer {...currentTileLayer} />
-      
-      <GeoJSON
-        ref={geojsonRef}
-        data={indiaData}
-        style={() => (isDark ? style.dark : style.light)}
-      />
+      <TileLayer {...tileLayer} />
+      <GeoJSON data={indiaData} style={geoJsonStyle} />
 
-      {statesData.map((state) => {
-        // small skip if lat/lng invalid
+      {/* Markers generated from reportsData */}
+      {reportsData.map((report, index) => {
+        const location = report.location;
         if (
-          !state.latitude ||
-          !state.longitude ||
-          (state.latitude === 0 && state.longitude === 0)
-        )
+          !location ||
+          typeof location.latitude !== "number" ||
+          typeof location.longitude !== "number"
+        ) {
           return null;
+        }
 
-        // color marker by intensity using same gradient idea:
+        const intensity = (100 - report.credibility_score) / 100.0;
         const color =
-          state.intensity >= 0.9
+          intensity >= 0.9
             ? "#d7191c"
-            : state.intensity >= 0.7
+            : intensity >= 0.7
             ? "#fdae61"
-            : state.intensity >= 0.4
+            : intensity >= 0.4
             ? "#ffffbf"
-            : state.intensity >= 0.15
+            : intensity >= 0.15
             ? "#7fcdbb"
             : "#2c7bb6";
 
         return (
           <Marker
-            key={state.id}
-            position={[state.latitude, state.longitude]}
+            key={report.id || `report-${index}`} // Use a unique ID from Firestore if available
+            position={[location.latitude, location.longitude]}
             icon={createCustomIcon(color)}
-            style={{ border: `none` }}
           >
             <Popup className="custom-popup">
               <div
@@ -312,17 +174,22 @@ const Graph = ({ theme = "dark" }) => {
                   color: isDark ? "white" : "black",
                   backgroundColor: isDark ? darkColors.card : "white",
                   padding: "1px 12px",
+                  borderRadius: "8px",
+                  border: `1px solid ${
+                    isDark ? darkColors.border : lightColors.border
+                  }`,
                 }}
               >
-                <p>{state.name}</p>
-                <p>Intensity: {state.intensity}</p>
+                <p className="font-semibold text-sm">{report.category}</p>
+                <p className="text-xs">{report.report_summary}</p>
+                <p className="text-xs font-bold">
+                  Credibility: {report.credibility_score}%
+                </p>
               </div>
             </Popup>
           </Marker>
         );
       })}
-
-      {connectionLines}
     </MapContainer>
   );
 };

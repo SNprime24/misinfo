@@ -1,14 +1,8 @@
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Graph from "../Graph2";
 import { Link } from "react-router-dom";
-
-// Import the new icons we'll use
-import {
-  IoGlobeOutline,
-  IoLocationOutline,
-  IoTimerOutline,
-  IoMove, // A clear icon for the drag handle
-} from "react-icons/io5";
+import axios from "axios";
+import { IoGlobeOutline, IoLocationOutline, IoMove } from "react-icons/io5";
 
 export default function MapCard({
   theme,
@@ -16,6 +10,66 @@ export default function MapCard({
   dragListeners,
   isDragging = false,
 }) {
+  const [heatmapData, setHeatmapData] = useState([]);
+  const [reportsData, setReportsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        // Fetch both heatmap and detailed reports data concurrently
+        const heatmapPromise = axios.get(
+          `${BASE_URL}/api/v1/dashboard/heatmap`
+        );
+        const reportsPromise = axios.get(
+          `${BASE_URL}/api/v1/dashboard/recentReports`
+        );
+
+        const [heatmapResponse, reportsResponse] = await Promise.all([
+          heatmapPromise,
+          reportsPromise,
+        ]);
+
+        setHeatmapData(heatmapResponse.data || []);
+        setReportsData(reportsResponse.data || []);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch map data:", err);
+        setError("Could not load map data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [BASE_URL]);
+
+  // This hook processes the raw report data to find the top 3 states
+  const topRegionsString = useMemo(() => {
+    if (!reportsData || reportsData.length === 0) {
+      return "No recent reports";
+    }
+
+    // Count the occurrences of each state
+    const stateCounts = reportsData.reduce((acc, report) => {
+      if (report.state && report.state !== "Unknown") {
+        acc[report.state] = (acc[report.state] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    // Sort the states by count in descending order
+    const sortedStates = Object.keys(stateCounts).sort(
+      (a, b) => stateCounts[b] - stateCounts[a]
+    );
+
+    // Get the top 3 and join them into a string, or show a default message
+    return sortedStates.slice(0, 5).join(" • ") || "No locations reported";
+  }, [reportsData]);
+
   return (
     <section
       className="rounded-3xl border overflow-hidden flex flex-col"
@@ -25,7 +79,6 @@ export default function MapCard({
         boxShadow: "0 4px 6px -1px rgba(0,0,0,0.05)",
       }}
     >
-      {/* --- HEADER --- */}
       <div
         className="px-3 py-2 sm:px-4 sm:py-3 flex justify-between items-center gap-3 border-b"
         style={{ borderColor: "var(--border)" }}
@@ -49,25 +102,18 @@ export default function MapCard({
             </div>
           </div>
         </div>
-
         <div className="flex items-center gap-2">
           <Link
             to="/view-reports"
-            target="_blank"
             rel="noopener noreferrer"
+            className="text-xs font-medium px-3 py-1.5 rounded-full"
             style={{
-              fontSize: "0.75rem",
               color: "var(--buttonText)",
-              padding: "6px 12px",
               background: "var(--accentBlue)",
-              borderRadius: "9999px",
-              textDecoration: "none",
-              fontWeight: 500,
             }}
           >
             View More
           </Link>
-          {/* UPDATED: Dedicated drag handle */}
           <div
             {...dragListeners}
             style={{ cursor: "grab", color: "var(--subtext)", padding: "8px" }}
@@ -78,27 +124,47 @@ export default function MapCard({
         </div>
       </div>
 
-      {/* --- MAP/GRAPH AREA (No changes here, the logic is great) --- */}
       <div className="w-full h-80 md:h-96 relative">
-        {isDragging ? (
-          <div className="w-full h-full flex items-center justify-center bg-gray-500/10">
-            <div style={{ color: "var(--subtext)" }}>Map Preview</div>
+        {loading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ color: "var(--subtext)" }}
+          >
+            Loading Map...
           </div>
-        ) : (
-          <Graph theme={theme} />
         )}
+        {error && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ color: "var(--subtext)" }}
+          >
+            {error}
+          </div>
+        )}
+        {!loading &&
+          !error &&
+          (isDragging ? (
+            <div className="w-full h-full flex items-center justify-center bg-gray-500/10">
+              <div style={{ color: "var(--subtext)" }}>Map Preview</div>
+            </div>
+          ) : (
+            // Pass both heatmap and reports data to the Graph component
+            <Graph
+              theme={theme}
+              heatmapData={heatmapData}
+              reportsData={reportsData}
+            />
+          ))}
       </div>
 
-      {/* --- FOOTER (Drag listeners removed for clarity) --- */}
       <div
-        className="p-2 sm:p-4 grid grid-cols-2 gap-3 border-t"
+        className="p-2 sm:p-4 grid grid-cols-1 border-t"
         style={{ borderColor: "var(--border)" }}
       >
         <div
           className="rounded-xl p-3"
           style={{ background: "rgba(120, 140, 170, 0.05)" }}
         >
-          {/* UPDATED: Added icon */}
           <div
             className="text-xs flex items-center gap-2"
             style={{ color: "var(--subtext)" }}
@@ -107,29 +173,10 @@ export default function MapCard({
             Top Regions
           </div>
           <div
-            className="mt-2 text-sm sm:text-base font-semibold"
+            className="mt-2 text-sm sm:text-base font-semibold truncate"
             style={{ color: "var(--text)" }}
           >
-            Mumbai • Delhi • Bengaluru
-          </div>
-        </div>
-        <div
-          className="rounded-xl p-3"
-          style={{ background: "rgba(120, 140, 170, 0.05)" }}
-        >
-          {/* UPDATED: Added icon */}
-          <div
-            className="text-xs flex items-center gap-2"
-            style={{ color: "var(--subtext)" }}
-          >
-            <IoTimerOutline />
-            Avg Response Time
-          </div>
-          <div
-            className="mt-2 text-sm sm:text-base font-semibold"
-            style={{ color: "var(--text)" }}
-          >
-            2.4 hrs
+            {topRegionsString}
           </div>
         </div>
       </div>
