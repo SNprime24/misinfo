@@ -89,7 +89,7 @@ export default function MapCard({
           >
             <IoGlobeOutline
               className="h-6 w-6"
-              style={{ color: "var(--primary-foreground, white)" }}
+              style={{ color: "var(--primary-foreground, black)" }}
             />
           </span>
           <div>
