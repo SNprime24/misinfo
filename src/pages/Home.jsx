@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import ResultSection from "../components/ResultSection";
-import { toPercent } from "../utils/helpers";
+import { toPercent } from "../utils/helpers.js";
 
 // --- Color Palettes ---
 const darkColors = {
