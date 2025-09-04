@@ -1,3 +1,6 @@
+// ScatterPlot and BubblePlot: Simple reusable chart components for visualizing points and bubbles.  
+// They map data values to SVG coordinates, scaling positions and sizes dynamically.  
+
 import React from "react";
 import { clamp } from "./chartUtils";
 

@@ -1,13 +1,15 @@
+// LineAreaSection: fetches traffic trends (reports vs. misinformation) from the backend API.  
+// Renders interactive line and area charts with timeframe filters (Daily/Weekly/Monthly).  
+
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { IoAnalyticsOutline } from "react-icons/io5"; // 1. Import the icon
+import { IoAnalyticsOutline } from "react-icons/io5"; 
 import config from '../../config.js';
 
-// --- Helper function to calculate nice intervals for the Y-axis ---
 function generateYTicks(dataMax) {
   if (dataMax <= 1) return { ticks: [0, 1], niceMax: 1 };
 
-  const numTicks = 4; // Aim for around 4 tick marks
+  const numTicks = 4; 
   const range = dataMax;
   const roughStep = range / (numTicks - 1);
 
@@ -30,11 +32,9 @@ function generateYTicks(dataMax) {
   return { ticks, niceMax };
 }
 
-// --- Helper Function ---
 const pointsToPath = (pts) =>
   pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`).join(" ");
 
-// --- Local Chart Component: LineChart ---
 function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
@@ -136,7 +136,6 @@ function LineChart({ data = [], labels = [], w = 320, h = 140 }) {
   );
 }
 
-// --- Local Chart Component: AreaChart ---
 function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   if (!data || data.length === 0) {
     return (
@@ -232,7 +231,6 @@ function AreaChart({ data = [], labels = [], w = 320, h = 140 }) {
   );
 }
 
-// --- Local UI Component: TimeframeButton ---
 const TimeframeButton = ({ label, active, onClick }) => (
   <button
     onClick={() => onClick(label)}
@@ -246,7 +244,6 @@ const TimeframeButton = ({ label, active, onClick }) => (
   </button>
 );
 
-// --- Main Exported Component ---
 function LineAreaSection({ theme, sectionAccents, dragListeners }) {
   const [trafficData, setTrafficData] = useState(null);
   const [timeframe, setTimeframe] = useState("Weekly");
@@ -327,7 +324,6 @@ function LineAreaSection({ theme, sectionAccents, dragListeners }) {
           className="flex items-center gap-3 cursor-grab active:cursor-grabbing"
           {...dragListeners}
         >
-          {/* 2. Add the icon inside the span */}
           <span
             className="w-10 h-10 rounded-lg flex items-center justify-center"
             style={sectionAccents.line}

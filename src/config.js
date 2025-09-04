@@ -1,3 +1,4 @@
+// Configuration object storing API base URL for backend communication
 const config = {
   API_URL: "https://misinformation-combater-backend-386097269689.europe-west1.run.app"
 };

@@ -1,3 +1,6 @@
+// LineChart: Renders a responsive line chart from numeric data using SVG paths.  
+// Normalizes values within chart bounds and applies layered stroke styling for clarity.  
+
 import React from "react";
 import { pointsToPath } from "./chartUtils";
 

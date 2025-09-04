@@ -1,10 +1,12 @@
+// Interactive map component using React Leaflet and Leaflet.js.  
+// Displays India's geo-boundaries, heatmap layers, and report markers with popups.  
+
 import React, { useRef, useMemo, useEffect } from "react";
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import indiaData from "../assets/india.json";
 
-// --- Color Palettes (Centralized here for this component) ---
 const darkColors = {
   bg: "rgb(11, 22, 44)",
   card: "rgb(18, 32, 58)",
@@ -18,9 +20,7 @@ const lightColors = {
   midBlue: "rgb(200, 220, 255)",
 };
 
-// --- Helper: Create Custom Marker Icon ---
 const createCustomIcon = (color) => {
-  // Fix for default icon path issue with bundlers like Vite/Webpack
   delete L.Icon.Default.prototype._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -37,7 +37,6 @@ const createCustomIcon = (color) => {
   });
 };
 
-// --- Main Graph Component ---
 const Graph = ({ theme = "dark", heatmapData = [], reportsData = [] }) => {
   const isDark = theme === "dark";
   const mapRef = useRef(null);
@@ -95,7 +94,6 @@ const Graph = ({ theme = "dark", heatmapData = [], reportsData = [] }) => {
     [isDark]
   );
 
-  // Effect to manage the heatmap layer
   useEffect(() => {
     if (!mapRef.current || !L.heatLayer) return;
 
@@ -139,7 +137,6 @@ const Graph = ({ theme = "dark", heatmapData = [], reportsData = [] }) => {
       <TileLayer {...tileLayer} />
       <GeoJSON data={indiaData} style={geoJsonStyle} />
 
-      {/* Markers generated from reportsData */}
       {reportsData.map((report, index) => {
         const location = report.location;
         if (
@@ -164,7 +161,7 @@ const Graph = ({ theme = "dark", heatmapData = [], reportsData = [] }) => {
 
         return (
           <Marker
-            key={report.id || `report-${index}`} // Use a unique ID from Firestore if available
+            key={report.id || `report-${index}`}
             position={[location.latitude, location.longitude]}
             icon={createCustomIcon(color)}
           >

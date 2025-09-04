@@ -1,9 +1,11 @@
+// PieSection: Fetches category-wise misinformation data from the backend and visualizes it.  
+// Displays a donut pie chart with legend, loading/error states, and draggable support.  
+
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
-import { HiOutlineChartPie } from "react-icons/hi"; // 1. Import the icon
+import { HiOutlineChartPie } from "react-icons/hi";
 import config from '../../config.js';
 
-// A color mapping for different misinformation categories.
 const categoryColors = {
     Health: "#4CAF50",
     Political: "#2196F3",
@@ -18,7 +20,6 @@ const categoryColors = {
     "Out of Context": "#00BCD4",
 };
 
-// --- Helper Functions for SVG rendering (unchanged) ---
 const polarToCartesian = (cx, cy, r, angleDeg) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180.0;
     return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
@@ -31,8 +32,6 @@ const pieSlicePath = (cx, cy, r, startAngle, endAngle) => {
     return `M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 ${laf} 1 ${x1} ${y1} Z`;
 };
 
-
-// --- Reusable PieChart Component (unchanged) ---
 function PieChart({
     values = [],
     colors = [],
@@ -82,7 +81,6 @@ function PieChart({
     );
 }
 
-// --- Skeleton Component for Loading State ---
 const PieSectionSkeleton = () => (
     <div className="p-2 sm:p-4 flex flex-col items-center gap-4 md:flex-row md:items-start md:gap-4 animate-pulse">
         <div className="flex-shrink-0 w-[120px] h-[120px] rounded-full" style={{ background: 'var(--border)' }} />
@@ -100,8 +98,6 @@ const PieSectionSkeleton = () => (
     </div>
 );
 
-
-// --- Main Section Component ---
 export default function PieSection({ theme, sectionAccents, dragListeners }) {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);

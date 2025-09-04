@@ -1,3 +1,6 @@
+// AreaChart: A lightweight custom SVG area chart component.  
+// Uses pointsToPath to draw smooth curves and applies gradient fill with stroke.  
+
 import React from "react";
 import { pointsToPath } from "./chartUtils";
 

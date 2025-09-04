@@ -1,8 +1,10 @@
+// ReportCard component: displays misinformation analysis with credibility score, summary, and metadata.  
+// Supports expandable details (analysis, metrics, and sources) with smooth animations.  
+
 import React, { useState } from "react";
 import { IoChevronDown, IoLinkOutline, IoMapOutline } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- Helper Functions (can be moved to a utils file) ---
 const formatTimestamp = (isoString) => {
   if (!isoString) return "";
   return new Intl.DateTimeFormat("en-IN", {
@@ -60,7 +62,6 @@ const MetricBar = ({ label, score }) => (
   </div>
 );
 
-// --- Main Report Card Component ---
 const ReportCard = ({ report }) => {
   const [isOpen, setIsOpen] = useState(false);
   const credibility = getCredibilityStyle(report.credibility_score);
@@ -70,7 +71,6 @@ const ReportCard = ({ report }) => {
       className={`p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg hover:ring-2 ${credibility.ring}`}
       style={{ background: "var(--card)", borderColor: "var(--border)" }}
     >
-      {/* --- Main Info Row --- */}
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <div className="flex justify-between items-center mb-3 gap-3 text-sm">
@@ -100,7 +100,6 @@ const ReportCard = ({ report }) => {
         </button>
       </div>
 
-      {/* --- Timestamp and Location Row --- */}
       <div
         className="text-xs mt-4 flex justify-between items-center"
         style={{ color: "var(--subtext)" }}
@@ -112,7 +111,6 @@ const ReportCard = ({ report }) => {
         </span>
       </div>
 
-      {/* --- Expandable Details Section --- */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -123,7 +121,6 @@ const ReportCard = ({ report }) => {
             className="overflow-hidden border-t pt-4"
             style={{ borderColor: "var(--border)" }}
           >
-            {/* Detailed Analysis */}
             <div className="mb-4">
               <h4
                 className="font-semibold mb-2"
@@ -139,7 +136,6 @@ const ReportCard = ({ report }) => {
               </p>
             </div>
 
-            {/* Metrics Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               <MetricBar label="Clarity" score={report.metrics.clarity} />
               <MetricBar label="Tone" score={report.metrics.tone} />
@@ -153,7 +149,6 @@ const ReportCard = ({ report }) => {
               />
             </div>
 
-            {/* Sources List */}
             <div>
               <h4
                 className="font-semibold mb-2"

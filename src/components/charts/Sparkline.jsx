@@ -1,3 +1,6 @@
+// Sparkline: A lightweight line chart component for showing data trends in small spaces.  
+// It scales points to fit within given width/height and highlights the latest data point.  
+
 import React from "react";
 import { pointsToPath } from "./chartUtils";
 

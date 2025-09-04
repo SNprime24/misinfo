@@ -1,4 +1,6 @@
-// chartUtils.js
+// chartUtils.js: Helper functions for chart math and SVG path generation.  
+// Includes clamping, line path conversion, polar coordinates, and pie slice paths.  
+
 export const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 
 export const pointsToPath = (pts) =>

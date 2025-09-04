@@ -1,3 +1,6 @@
+// Header component with navigation and theme toggle functionality.  
+// Handles switching between Home/Dashboard and Light/Dark modes.  
+
 import { Moon, Sun, LayoutDashboard, Home as HomeIcon } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
