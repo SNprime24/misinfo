@@ -1,3 +1,6 @@
+// RadarChart: Draws a radar/spider chart with axes, labels, and a filled polygon for values.  
+// Uses polarToCartesian to position axis lines, data points, and labels around the circle.  
+
 import React from "react";
 import { polarToCartesian } from "./chartUtils";
 

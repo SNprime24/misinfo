@@ -1,3 +1,6 @@
+// Home page of the Misinformation Combater app.  
+// Handles text/file input, sends analysis requests to the backend, and displays results with a dark theme.  
+
 import React, { useMemo, useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
@@ -8,7 +11,6 @@ import ResultSection from "../components/ResultSection";
 import { toPercent } from "../utils/helpers";
 import config from '../config.js';
 
-// --- Color Palettes ---
 const darkColors = {
   bg: "rgb(10,12,20)",
   card: "rgba(255,255,255,0.03)",
@@ -20,7 +22,6 @@ const darkColors = {
   darkBlue: "rgb(10,40,120)",
 };
 
-// --- Modal Component ---
 function Modal({ open, title, onClose, children }) {
   if (!open) return null;
   return (
@@ -62,9 +63,7 @@ function Modal({ open, title, onClose, children }) {
   );
 }
 
-// ---- HOME PAGE ----
 export default function Home({ theme, setTheme }) {
-  // CORRECTED: Force the palette to always use darkColors
   const palette = darkColors;
 
   const cssVars = useMemo(
@@ -78,7 +77,7 @@ export default function Home({ theme, setTheme }) {
       "--midBlue": palette.midBlue,
       "--darkBlue": palette.darkBlue,
     }),
-    [palette] // Dependency is now constant but kept for structure
+    [palette]
   );
 
   const [input, setInput] = useState("");
@@ -156,11 +155,10 @@ export default function Home({ theme, setTheme }) {
       className="min-h-screen w-full"
       style={{ ...cssVars, background: "var(--bg)" }}
     >
-      {/* HEADER: Force theme prop to "dark" to ensure icon is correct */}
       <Header theme="dark" setTheme={setTheme} />
 
       <HeroSection
-        theme="dark" // Pass "dark" to ensure HeroSection is also dark
+        theme="dark"
         input={input}
         setInput={setInput}
         handleAnalyze={handleAnalyze}

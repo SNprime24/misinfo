@@ -1,3 +1,6 @@
+// MicrophoneButton component: toggles speech recognition on/off using custom hook.  
+// Displays Mic/MicOff icons, updates parent on listening state, and streams transcripts.  
+
 import React, { useEffect } from "react";
 import { Mic, MicOff } from "lucide-react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";

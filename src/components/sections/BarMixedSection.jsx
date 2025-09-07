@@ -1,7 +1,8 @@
+// BarMixedSection: renders a styled card section with a mixed bar-line chart.  
+// Shows monthly volume alongside credibility trends with theme-aware styling.  
+
 import React from "react";
 import MixedBarLine from "../charts/MixedBarLine";
-// import BarChart from "../charts/BarChart";
-// import Sparkline from "../charts/Sparkline";
 
 export default function BarMixedSection({
     mixedBar,

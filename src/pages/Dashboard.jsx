@@ -1,6 +1,8 @@
+// Dashboard page that displays multiple data visualization sections.  
+// Users can rearrange sections via drag-and-drop with support for light/dark themes.  
+
 import React, { useMemo, useState } from "react";
 
-// ----------------- DND-Kit Imports -----------------
 import {
   DndContext,
   DragOverlay,
@@ -19,7 +21,6 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// ----------------- Component Imports -----------------
 import Header from "../components/Header";
 import LineAreaSection from "../components/sections/LineAreaSection";
 import PieSection from "../components/sections/PieSection";
@@ -27,7 +28,6 @@ import RadarPolarSection from "../components/sections/RadarPolarSection";
 import MapCard from "../components/sections/MapCard";
 import SourcesCredibility from "../components/sections/SourcesCredibility";
 
-// ----------------- Color Palettes -----------------
 const darkColors = {
   bg: "rgb(10,12,20)",
   card: "rgb(18, 32, 58)",
@@ -82,7 +82,6 @@ const lightAccents = {
   palette: ["#0ea5e9", "#10b981", "#7c3aed", "#3b82f6", "#f59e0b", "#ef4444"],
 };
 
-// This wrapper now passes dragListeners down to its child
 function SortableWrapper({ id, children }) {
   const {
     attributes,
@@ -107,7 +106,6 @@ function SortableWrapper({ id, children }) {
   );
 }
 
-// ----------------- Dashboard Component -----------------
 export default function Dashboard({ theme, setTheme }) {
   const palette =
     theme === "dark"

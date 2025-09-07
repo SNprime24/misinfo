@@ -1,3 +1,6 @@
+// MapCard: Fetches and displays a geographic heatmap of misinformation reports.  
+// Includes interactive drag support, top reported regions, and quick navigation to detailed rep
+
 import React, { useState, useEffect, useMemo } from "react";
 import Graph from "../Graph2";
 import { Link } from "react-router-dom";
@@ -22,7 +25,6 @@ export default function MapCard({
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch both heatmap and detailed reports data concurrently
         const heatmapPromise = axios.get(
           `${BASE_URL}/api/v1/dashboard/heatmap`
         );
@@ -48,13 +50,11 @@ export default function MapCard({
     fetchData();
   }, [BASE_URL]);
 
-  // This hook processes the raw report data to find the top 3 states
   const topRegionsString = useMemo(() => {
     if (!reportsData || reportsData.length === 0) {
       return "No recent reports";
     }
 
-    // Count the occurrences of each state
     const stateCounts = reportsData.reduce((acc, report) => {
       if (report.state && report.state !== "Unknown") {
         acc[report.state] = (acc[report.state] || 0) + 1;
@@ -62,12 +62,10 @@ export default function MapCard({
       return acc;
     }, {});
 
-    // Sort the states by count in descending order
     const sortedStates = Object.keys(stateCounts).sort(
       (a, b) => stateCounts[b] - stateCounts[a]
     );
 
-    // Get the top 3 and join them into a string, or show a default message
     return sortedStates.slice(0, 5).join(" • ") || "No locations reported";
   }, [reportsData]);
 
@@ -91,7 +89,7 @@ export default function MapCard({
           >
             <IoGlobeOutline
               className="h-6 w-6"
-              style={{ color: "var(--primary-foreground, white)" }}
+              style={{ color: "var(--primary-foreground, black)" }}
             />
           </span>
           <div>
@@ -149,7 +147,6 @@ export default function MapCard({
               <div style={{ color: "var(--subtext)" }}>Map Preview</div>
             </div>
           ) : (
-            // Pass both heatmap and reports data to the Graph component
             <Graph
               theme={theme}
               heatmapData={heatmapData}

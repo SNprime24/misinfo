@@ -1,3 +1,6 @@
+// QuickActions: Renders a panel with shortcut buttons for policy and moderation tasks.  
+// Includes options like bulk review, export, and quick access to case manager.  
+
 import React from "react";
 
 export default function QuickActions({ theme }) {

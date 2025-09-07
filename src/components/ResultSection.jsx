@@ -1,3 +1,6 @@
+// ResultSection: displays credibility scores, summaries, analysis, entities, sources, and formal reporting options.  
+// Includes interactive actions (download, copy, report links) and methodology explanation for transparency.  
+
 import { useMemo, useState } from "react";
 import { Download, Info, ExternalLink, Clipboard } from "lucide-react";
 
@@ -99,7 +102,6 @@ export default function ResultSection({
   return (
     <section className="py-10 md:py-14">
       <div className="max-w-6xl mx-auto px-4 space-y-10">
-        {/* {isNotEmpty && ( */}
         <div>
           <div className="flex flex-col md:flex-row md:items-end gap-3 md:gap-6 justify-between">
             <div>
@@ -373,8 +375,6 @@ export default function ResultSection({
             </div>
           </div>
         </div>
-        {/* )} */}
-        {/* {safe.formal_report && ( */}
         <div>
           <h2
             className="text-2xl md:text-3xl font-bold tracking-tight mb-4"
@@ -383,7 +383,6 @@ export default function ResultSection({
             Formal Reporting
           </h2>
           <div className="flex flex-col md:flex-row gap-5">
-            {/* Formal Report Display */}
             <div
               className="rounded-3xl border p-5 md:p-6 w-full md:w-[60%]"
               style={{
@@ -430,7 +429,6 @@ export default function ResultSection({
               </div>
             </div>
 
-            {/* Reporting Links Section */}
             <div
               className="rounded-3xl border p-5 md:p-6 w-full md:w-[40%]"
               style={{
@@ -449,7 +447,6 @@ export default function ResultSection({
                 portals.
               </p>
               <div className="space-y-3">
-                {/* National Cyber Crime Portal */}
                 <a
                   href="https://cybercrime.gov.in/"
                   target="_blank"
@@ -460,7 +457,6 @@ export default function ResultSection({
                     color: "var(--text)",
                   }}
                 >
-                  {/* You can use an SVG or an icon library for the icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -477,7 +473,6 @@ export default function ResultSection({
                   <span>National Cyber Crime Portal</span>
                 </a>
 
-                {/* X (Twitter) */}
                 <a
                   href="https://help.x.com/en/safety-and-security/report-a-post"
                   target="_blank"
@@ -506,7 +501,6 @@ export default function ResultSection({
                   <span>Report on X (Twitter)</span>
                 </a>
 
-                {/* Facebook */}
                 <a
                   href="https://www.facebook.com/help/1380418588640631/?helpref=hc_fnav"
                   target="_blank"
@@ -533,7 +527,6 @@ export default function ResultSection({
                   <span>Report on Facebook</span>
                 </a>
 
-                {/* Instagram */}
                 <a
                   href="https://help.instagram.com/192435014247952"
                   target="_blank"
@@ -572,7 +565,6 @@ export default function ResultSection({
             </div>
           </div>
         </div>
-        {/* )} */}
         <div id="methodology">
           <h2
             className="text-2xl md:text-3xl font-bold tracking-tight mb-4"

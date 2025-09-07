@@ -1,22 +1,22 @@
+// RadarPolarSection: Fetches and displays radar chart data from the backend.  
+// Visualizes average metric scores with a custom SVG radar chart and analysis notes.  
+
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { TbRadar2 } from "react-icons/tb"; // 1. Import the icon
+import { TbRadar2 } from "react-icons/tb";
 import config from '../../config.js';
 
-// --- Local Helper Functions for SVG rendering ---
 const polarToCartesian = (cx, cy, r, angleDeg) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180.0;
     return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
 };
 
-// --- Local Chart Component: RadarChart ---
 function RadarChart({ axes = [], values = [], size = 220 }) {
     const cx = size / 2;
     const cy = size / 2;
-    const r = size / 2 - 24; // Radius with padding for labels
+    const r = size / 2 - 24;
     const numAxes = axes.length;
 
-    // Scale all values from 0-100 to the radius of the chart
     const max = 100;
     const valuePts = values.map((v, i) =>
         polarToCartesian(cx, cy, (v / max) * r, (i / numAxes) * 360)
@@ -27,7 +27,6 @@ function RadarChart({ axes = [], values = [], size = 220 }) {
 
     return (
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-            {/* Axis lines and background polygon */}
             <polygon
                 points={axisPts.map((p) => p.join(",")).join(" ")}
                 fill="transparent"
@@ -46,7 +45,6 @@ function RadarChart({ axes = [], values = [], size = 220 }) {
                 />
             ))}
 
-            {/* Data polygon */}
             <polygon
                 points={valuePts.map((p) => p.join(",")).join(" ")}
                 fill="var(--accentGreen)"
@@ -55,7 +53,6 @@ function RadarChart({ axes = [], values = [], size = 220 }) {
                 strokeWidth="1.5"
             />
 
-            {/* Axis labels */}
             {axes.map((axis, i) => {
                 const labelPos = polarToCartesian(cx, cy, r + 12, (i / numAxes) * 360);
                 return (
@@ -76,7 +73,6 @@ function RadarChart({ axes = [], values = [], size = 220 }) {
     );
 }
 
-// --- Main Exported Component ---
 export default function RadarPolarSection({ theme, sectionAccents, dragListeners}) {
     const [radarData, setRadarData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -99,7 +95,6 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
         fetchData();
     }, []);
 
-    // Memoize chart data processing for efficiency
     const { radarAxes, radarVals } = useMemo(() => {
         const hasData = radarData && Object.keys(radarData).length > 0;
 
@@ -108,7 +103,6 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
             : ["Clarity", "Tone", "Correctness", "Originality", "Score"];
         const values = hasData ? Object.values(radarData) : [85, 70, 60, 75, 80];
 
-        // Format labels for consistency (e.g., "credibility_score" -> "Credibility Score")
         const formattedAxes = axes.map((axis) =>
             axis.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())
         );
@@ -122,13 +116,11 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
             style={{ borderColor: "var(--border)", background: "var(--card)" }}
             {...dragListeners}
         >
-            {/* Header */}
             <div
                 className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 border-b"
                 style={{ borderColor: "var(--border)" }}
             >
                 <div className="flex items-center gap-3">
-                    {/* 2. Add the icon to the span */}
                     <span
                         className="w-10 h-10 rounded-lg flex items-center justify-center"
                         style={sectionAccents.radar}
@@ -149,9 +141,7 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
                 </div>
             </div>
 
-            {/* Body */}
             <div className="p-3 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                {/* Radar Chart Container (2/3 width on desktop) */}
                 <div className="md:col-span-2 rounded-xl flex justify-center items-center">
                     {loading ? (
                         <div
@@ -169,7 +159,6 @@ export default function RadarPolarSection({ theme, sectionAccents, dragListeners
                     )}
                 </div>
 
-                {/* Notes Section (1/3 width on desktop) */}
                 <div className="md:col-span-1 text-center md:text-left">
                     <div
                         className="text-sm font-semibold mb-1"

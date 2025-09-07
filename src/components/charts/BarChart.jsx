@@ -1,3 +1,6 @@
+// BarChart: Renders a simple gradient-filled bar chart using SVG.  
+// Dynamically scales bar heights based on data values with padding for spacing.  
+
 import React from "react";
 
 export default function BarChart({ data = [], w = 320, h = 140 }) {

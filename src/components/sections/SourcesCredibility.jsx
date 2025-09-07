@@ -1,10 +1,12 @@
+// SourcesCredibility: Fetches and displays top domains with credibility percentages.  
+// Includes loading skeleton, error handling, retry, and progress bars for visualization.  
+
 import React, { useState, useEffect, useCallback } from "react";
 import { clamp } from "../charts/chartUtils";
 import axios from "axios";
 import { IoNewspaperOutline } from "react-icons/io5";
 import config from '../../config.js';
 
-// A reusable skeleton item component for the loading state.
 const SkeletonItem = () => (
     <div className="animate-pulse">
         <div className="flex items-center justify-between">
@@ -14,7 +16,6 @@ const SkeletonItem = () => (
         <div className="h-2 w-full rounded-full mt-2" style={{ background: "var(--border)" }}></div>
     </div>
 );
-
 
 function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
     const [sources, setSources] = useState([]);
@@ -112,7 +113,6 @@ function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
             style={{ borderColor: "var(--border)", background: "var(--card)" }}
             {...dragListeners}
         >
-            {/* Header */}
             <div
                 className="flex items-center justify-between py-2 sm:py-3 border-b mb-3 w-full"
                 style={{ borderColor: "var(--border)" }}
@@ -122,7 +122,6 @@ function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
                         className="w-10 h-10 rounded-lg flex items-center justify-center"
                         style={sectionAccents.bar}
                     >
-                        {/* 2. Replace the SVG with the imported icon component */}
                         <IoNewspaperOutline
                             className="h-7 w-7"
                             style={{ color: "var(--primary-foreground)" }}
@@ -145,12 +144,10 @@ function SourcesCredibility({ palette, sectionAccents, dragListeners }) {
                 )}
             </div>
 
-            {/* Content */}
             <div className="space-y-3 px-3 sm:px-4">
                 {renderContent()}
             </div>
         </section>
-
     );
 }
 

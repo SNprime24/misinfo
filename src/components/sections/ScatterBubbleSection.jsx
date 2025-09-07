@@ -1,3 +1,6 @@
+// ScatterBubbleSection: Renders scatter and bubble plots side by side.  
+// Helps visualize dispersion, outliers, and clusters in the dataset.  
+
 import React from "react";
 import { ScatterPlot, BubblePlot } from "../charts/ScatterAndBubble";
 

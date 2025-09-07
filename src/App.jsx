@@ -1,3 +1,6 @@
+// Main App component that handles theme persistence (light/dark mode) using localStorage.  
+// It also defines and manages all application routes with React Router.  
+
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,7 +19,6 @@ export default function App() {
 
   useEffect(() => {
     try {
-      // Correctly read from localStorage, providing a fallback
       const saved = localStorage.getItem("theme");
       if (saved === "dark" || saved === "light") {
         setTheme(saved);
@@ -26,7 +28,6 @@ export default function App() {
     }
   }, []);
 
-  // Effect to update the document when the theme changes
   useEffect(() => {
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
@@ -43,21 +44,10 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* ADDED: This route redirects the base URL "/" to "/home" */}
         <Route path="/" element={<Navigate to="/home" />} />
-
-        <Route
-          path="/home"
-          element={<Home theme={theme} setTheme={setTheme} />}
-        />
-        <Route
-          path="/dashboard"
-          element={<Dashboard theme={theme} setTheme={setTheme} />}
-        />
-        <Route
-          path="/view-reports"
-          element={<ReportsPage theme={theme} setTheme={setTheme} />}
-        />
+        <Route path="/home" element={<Home theme={theme} setTheme={setTheme} />} />
+        <Route path="/dashboard" element={<Dashboard theme={theme} setTheme={setTheme} />} />
+        <Route path="/view-reports" element={<ReportsPage theme={theme} setTheme={setTheme} />} />
       </Routes>
     </Router>
   );

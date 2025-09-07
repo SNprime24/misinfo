@@ -1,3 +1,6 @@
+// PolarChart: Renders a radial chart where each slice’s radius is scaled by its value.  
+// Uses pieSlicePath to generate wedge-shaped paths and fills them with palette colors.  
+
 import React from "react";
 import { pieSlicePath } from "./chartUtils";
 

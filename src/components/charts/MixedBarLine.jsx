@@ -1,3 +1,6 @@
+// MixedBarLine: Combines bar and line charts in one responsive SVG visualization.  
+// Scales bars and line data separately, rendering gradient bars with an overlaid line path.  
+
 import React from "react";
 import { pointsToPath } from "./chartUtils";
 

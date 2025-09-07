@@ -1,3 +1,6 @@
+// HeroSection component: handles text, file, and microphone input for misinformation analysis.  
+// Supports drag & drop uploads, live previews, file validation, and submission via Analyze button.  
+
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -10,7 +13,7 @@ import {
 } from "lucide-react";
 import MicrophoneButton from "./MicrophoneButton";
 
-const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; // 15 MB
+const MAX_FILE_SIZE_BYTES = 15 * 1024 * 1024; 
 
 const HeroSection = ({ theme, handleAnalyze, loading, error, setError }) => {
   const [input, setInput] = useState("");

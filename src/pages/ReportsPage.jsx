@@ -1,21 +1,20 @@
+// Reports page that displays recent misinformation reports.  
+// Includes filters by state and time duration, with support for light/dark themes.  
+
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import {
   IoMapOutline,
   IoTimeOutline,
-  IoChevronDown,
-  IoLinkOutline,
   IoSadOutline,
 } from "react-icons/io5";
-import { motion, AnimatePresence } from "framer-motion";
 import Header from "../components/Header";
 import config from "../config.js";
 import ReportCard from "../components/ReportCard.jsx";
 
 const API_URL = config.API_URL || "http://127.0.0.1:8000";
 
-// --- Color Palettes ---
 const darkColors = {
   bg: "rgb(10,12,20)",
   card: "rgb(18, 32, 58)",
@@ -32,8 +31,6 @@ const lightColors = {
   border: "rgb(226, 232, 240)",
   accentBlue: "rgb(0, 110, 255)",
 };
-
-// --- Reusable Components (moved outside main component) ---
 
 const FilterDropdown = ({ label, icon, value, onChange, options }) => (
   <div className="flex-1">
@@ -142,7 +139,6 @@ const MetricBar = ({ label, score }) => (
   </div>
 );
 
-// --- Main Page Component ---
 const ReportsPage = ({ theme, setTheme }) => {
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
