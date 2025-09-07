@@ -27,10 +27,10 @@ const Header = ({ theme, setTheme }) => {
               className="text-sm tracking-widest font-bold uppercase"
               style={{ color: "var(--text)" }}
             >
-              BlueBrains
+              Misinformation Combater
             </div>
             <div className="text-xs" style={{ color: "var(--subtext)" }}>
-              Misinformation Combater
+              BlueBrains
             </div>
           </div>
         </a>
